@@ -1,0 +1,707 @@
+/**
+ * Modern Dark Theme for BTG
+ * 
+ * A clean, modern flat theme inspired by ModelContextProtocol.io design
+ * This theme completely replaces the previous dark theme with a more
+ * professional and minimal aesthetic.
+ */
+
+/* Base Color Palette - Based on ModelContextProtocol.io website */
+:root {
+  /* Primary Background Colors */
+  --btg-bg-dark: #0d1117;       /* Main background color - from MCP site */
+  --btg-bg-darker: #010409;     /* Darker background for contrast elements */
+  --btg-bg-lighter: #161b22;    /* Lighter background for cards, inputs, etc. */
+  --btg-bg-sidebar: rgba(255, 255, 255, 0.05); /* Sidebar background - white/5 */
+  
+  /* Text Colors */
+  --btg-text-primary: rgb(158, 158, 158);  /* Primary text color as requested */
+  --btg-text-secondary: #9ca3af;/* Secondary text (--tw-prose-invert-lead) */
+  --btg-text-muted: #858faf;    /* Muted text for placeholders, etc. */
+  --btg-text-bright: #fff;      /* Bright text for headings (--tw-prose-invert-headings) */
+  --btg-text-link: #fff;        /* Link text color (--tw-prose-invert-links) */
+  --btg-text-code: #fff;        /* Code text (--tw-prose-invert-code) */
+  
+  /* Border Colors */
+  --btg-border-primary: #374151; /* Primary borders (--tw-prose-invert-hr) */
+  --btg-border-table: #4b5563;   /* Table borders (--tw-prose-invert-th-borders) */
+  
+  /* Accent Colors */
+  --btg-primary: #58a6ff;       /* Primary accent color */
+  --btg-success: #3fb950;       /* Success indicators */
+  --btg-warning: #d29922;       /* Warning indicators */
+  --btg-danger: #f85149;        /* Danger/error indicators */
+  
+  /* Other */
+  --btg-border: #30363d;        /* Border color for elements */
+  --btg-shadow: rgba(0, 0, 0, 0.3); /* Shadow color with transparency */
+  
+  /* Bootstrap Overrides */
+  --bs-body-bg: var(--btg-bg-dark);
+  --bs-body-color: var(--btg-text-primary);
+  --bs-primary: var(--btg-primary);
+  --bs-border-color: var(--btg-border);
+  --bs-link-color: var(--btg-text-link);
+  --bs-link-hover-color: var(--btg-primary);
+}
+
+/* Body Styles */
+body {
+  background-color: var(--btg-bg-dark);
+  color: var(--btg-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* MCP-style Layout Structure */
+.container {
+  max-width: 1000px !important; /* Updated to 1000px as requested */
+  padding: 0 1rem !important;
+  margin: 0 auto !important;
+}
+
+/* Create a three-column layout like MCP */
+.mcp-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Left sidebar */
+.mcp-sidebar {
+  width: 19rem;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: var(--btg-bg-sidebar);
+  border-right: 1px solid var(--btg-border-primary);
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* Main content area */
+.mcp-content {
+  flex: 1;
+  margin-left: 19rem;
+  padding: 2rem 3rem;
+}
+
+/* Right sidebar (on this page) */
+.mcp-toc {
+  width: 17rem;
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 2rem 1.5rem;
+  overflow-y: auto;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--btg-text-bright); /* Updated light grey color for all headers */
+  font-weight: 400;
+  margin-bottom: .5rem;
+  line-height: 1.2;
+}
+
+
+p {
+  margin-bottom: .5rem;
+}
+
+a {
+  color: var(--btg-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #4589d1;
+  text-decoration: none;
+}
+
+code {
+  background-color: rgba(0, 0, 0, 0.5); /* --tw-prose-invert-pre-bg */
+  border-radius: 3px;
+  padding: 0.2em 0.4em;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 85%;
+  color: var(--btg-text-code);
+}
+
+/* Dark Mode Class */
+.dark-mode {
+  color-scheme: dark;
+}
+
+/* Navigation Bar - Clean, minimal styling like MCP site */
+.navbar {
+  background-color: var(--btg-bg-darker) !important;
+  border-bottom: 1px solid var(--btg-border-primary);
+  padding: 0.8rem 1rem;
+  box-shadow: none;
+}
+
+.navbar-brand {
+  color: var(--btg-text-bright) !important;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: var(--btg-text-secondary);
+  padding: 0.5rem 1rem;
+  transition: color 0.2s ease;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link:focus {
+  color: var(--btg-text-bright);
+}
+
+.navbar-dark .navbar-nav .active > .nav-link {
+  color: var(--btg-primary);
+}
+
+.theme-toggle {
+  color: var(--btg-text-secondary) !important;
+  transition: color 0.2s ease;
+}
+
+.theme-toggle:hover {
+  color: var(--btg-text-bright) !important;
+}
+
+/* MCP-style flat layout - No cards */
+.project-section, .sprint-section {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.section-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--btg-border-primary);
+}
+
+.content-block {
+  margin-bottom: 1.5rem;
+}
+
+/* Card styling */
+.card {
+  background-color: transparent;
+  border: 1px solid var(--btg-border-primary);
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  background-color: transparent;
+  border-bottom: 1px solid var(--btg-border-primary);
+  padding: 1rem 1.25rem;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.card-footer {
+  background-color: transparent;
+  border-top: 1px solid var(--btg-border-primary);
+  padding: 0.75rem 1.25rem;
+}
+
+.card-title {
+  color: var(--btg-text-bright);
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.card-text {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.badge {
+  font-weight: 500;
+  padding: 0.4rem 0.65rem;
+}
+
+/* Project and Sprint styling to match MCP */
+.project-card {
+  border-bottom: 1px solid var(--btg-border-primary);
+  margin-bottom: 2rem;
+}
+
+.sprint-card {
+  padding-left: 1rem;
+  margin-bottom: 1.5rem;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.sprint-card.sprint-open {
+  border-left: 3px solid var(--btg-border-primary);
+}
+
+.sprint-card.active {
+  border-left: 3px solid var(--btg-primary);
+}
+
+.sprint-card.completed {
+  border-left: 3px solid var(--btg-success);
+}
+
+.sprint-header {
+  background-color: transparent;
+  border-bottom: 1px solid var(--btg-border-primary);
+  padding: 0.75rem 0;
+}
+
+.sprint-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
+  color: var(--btg-text-bright)
+}
+
+/* Section styling */
+.section-title {
+  font-size: 1.75rem;
+  color: var(--btg-text-bright);
+  margin-bottom: 1rem;
+}
+
+.subsection-title {
+  font-size: 1.25rem;
+  color: var(--btg-text-bright);
+  margin-bottom: 0.75rem;
+}
+
+/* Buttons - Clean, minimal styling */
+
+
+.btn-primary {
+  background-color: var(--btg-primary);
+  border-color: var(--btg-primary);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: #4589d1;
+  border-color: #4589d1;
+  box-shadow: none;
+}
+
+.btn-success {
+  background-color: var(--btg-success);
+  border-color: var(--btg-success);
+}
+
+.btn-success:hover, .btn-success:focus {
+  background-color: #2ea043;
+  border-color: #2ea043;
+  box-shadow: none;
+}
+
+.btn-danger {
+  background-color: var(--btg-danger);
+  border-color: var(--btg-danger);
+}
+
+.btn-danger:hover, .btn-danger:focus {
+  background-color: #da3633;
+  border-color: #da3633;
+  box-shadow: none;
+}
+
+.btn-outline-primary {
+  color: var(--btg-primary);
+  border-color: var(--btg-primary);
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+  background-color: var(--btg-primary);
+  color: #fff;
+  box-shadow: none;
+}
+
+.btn-outline-secondary {
+  color: var(--btg-text-secondary);
+  border-color: var(--btg-border-primary);
+}
+
+.btn-outline-secondary:hover, .btn-outline-secondary:focus {
+  background-color: var(--btg-bg-lighter);
+  color: var(--btg-text-bright);
+  border-color: var(--btg-border-primary);
+  box-shadow: none;
+}
+
+.btn-outline-danger {
+  color: var(--btg-danger);
+  border-color: var(--btg-danger);
+}
+
+.btn-outline-danger:hover, .btn-outline-danger:focus {
+  background-color: var(--btg-danger);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* Make trash buttons more subtle */
+.btn-link.text-danger,
+.delete-project-btn,
+.delete-sprint-btn,
+.delete-task-btn,
+.delete-issue-btn {
+  color: var(--btg-text-muted) !important;
+  opacity: 0.7;
+  border-color: transparent;
+}
+
+.btn-link.text-danger:hover,
+.delete-project-btn:hover,
+.delete-sprint-btn:hover,
+.delete-task-btn:hover,
+.delete-issue-btn:hover {
+  color: var(--btg-danger) !important;
+  opacity: 1;
+  background-color: transparent;
+}
+
+/* Form Controls */
+.form-control {
+  background-color: var(--btg-bg-darker);
+  border: 1px solid var(--btg-border-primary);
+  border-radius: 6px;
+  color: var(--btg-text-primary);
+  padding: 0.5rem 0.75rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  background-color: var(--btg-bg-darker);
+  border-color: var(--btg-primary);
+  box-shadow: none;
+  color: var(--btg-text-bright);
+}
+
+.form-control::placeholder {
+  color: var(--btg-text-muted);
+}
+
+.form-select {
+  background-color: var(--btg-bg-darker);
+  border: 1px solid var(--btg-border-primary);
+  border-radius: 6px;
+  color: var(--btg-text-primary);
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-select:focus {
+  background-color: var(--btg-bg-darker);
+  border-color: var(--btg-primary);
+  box-shadow: none;
+  color: var(--btg-text-bright);
+}
+
+/* Tables */
+.table {
+  color: var(--btg-text-primary);
+}
+
+.table th {
+  border-bottom: 1px solid var(--btg-border-table);
+  color: var(--btg-text-bright);
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+.table td {
+  border-bottom: 1px solid var(--btg-border-primary);
+  padding: 0.75rem;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Footer */
+footer {
+  background-color: var(--btg-bg-darker) !important;
+  border-top: 1px solid var(--btg-border-primary);
+  color: var(--btg-text-secondary);
+  padding: 1rem 0;
+  margin-top: 2rem;
+}
+
+/* Modals */
+.modal-content {
+  background-color: var(--btg-bg-lighter);
+  border: 1px solid var(--btg-border-primary);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--btg-border-primary);
+  padding: 1rem;
+}
+
+.modal-title {
+  color: var(--btg-text-bright);
+}
+
+.modal-body {
+  padding: 1.25rem;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--btg-border-primary);
+  padding: 1rem;
+}
+
+/* Badges */
+.badge {
+  font-weight: 500;
+  padding: 0.4rem;
+}
+
+/* MCP-style sidebar navigation */
+.sidebar-nav {
+  background-color: var(--btg-bg-sidebar);
+  border-right: 1px solid var(--btg-border-primary);
+  padding: 1.5rem 0;
+  height: 100%;
+}
+
+.sidebar-nav .nav-link {
+  color: var(--btg-text-secondary);
+  padding: 0.5rem 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar-nav .nav-link:hover,
+.sidebar-nav .nav-link:focus {
+  color: var(--btg-text-bright);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-nav .nav-link.active {
+  color: var(--btg-primary);
+  background-color: rgba(88, 166, 255, 0.1);
+}
+
+/* On this page navigation (like in MCP) */
+.on-this-page {
+  position: sticky;
+  top: 2rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--btg-border-primary);
+}
+
+.on-this-page-title {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--btg-text-secondary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.on-this-page-link {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--btg-text-secondary);
+  padding: 0.25rem 0;
+  transition: color 0.2s ease;
+}
+
+.on-this-page-link:hover,
+.on-this-page-link:focus {
+  color: var(--btg-text-bright);
+}
+
+.on-this-page-link.active {
+  color: var(--btg-primary);
+  font-weight: 500;
+}
+
+/* Code blocks */
+pre {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* Dividers */
+hr {
+  border: 0;
+  border-top: 1px solid var(--btg-border-primary);
+  margin: 1.5rem 0;
+}
+
+/* Utilities */
+.text-muted {
+  color: var(--btg-text-muted) !important;
+}
+
+.bg-dark {
+  background-color: var(--btg-bg-darker) !important;
+}
+
+.border {
+  border-color: var(--btg-border-primary) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Collapsible sections */
+.collapsible-header {
+  cursor: pointer;
+  padding: 0.5rem 0;
+}
+
+/* Action icons styling - applied to all icons */
+
+
+
+
+.action-icon.delete-sprint-btn:hover,
+button.delete-sprint-btn:hover i.fas,
+button.btn-outline-danger:hover i.fas,
+i.fa-trash:hover,
+.fa-trash.text-danger:hover {
+  color: var(--btg-danger) !important;
+  opacity: 0.7;
+}
+
+/* Preserve button text color */
+.btn-primary i.fas,
+.btn-outline-primary i.fas,
+.btn-secondary i.fas,
+.btn-outline-secondary i.fas {
+  color: inherit;
+}
+
+/* Smaller chevron icons */
+.collapsible-header .fas.fa-chevron-up,
+.collapsible-header .fas.fa-chevron-down {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* Remove hover tooltips */
+[title] {
+  position: relative;
+}
+
+[title]:hover::after {
+  display: none !important;
+}
+
+/* Alpine.js Transitions */
+.transition {
+    transition-property: opacity, transform;
+}
+
+.duration-200 {
+    transition-duration: 200ms;
+}
+
+.ease-in {
+    transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+}
+
+.ease-out {
+    transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+.transform {
+    transform: translateY(0);
+}
+
+.opacity-0 {
+    opacity: 0;
+}
+
+.opacity-100 {
+    opacity: 1;
+}
+
+.-translate-y-2 {
+    transform: translateY(-0.5rem);
+}
+
+.translate-y-0 {
+    transform: translateY(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .mcp-sidebar {
+    width: 16rem;
+  }
+  
+  .mcp-content {
+    margin-left: 16rem;
+    margin-right: 0;
+    padding: 2rem;
+  }
+  
+  .mcp-toc {
+    display: none;
+  }
+}
+
+@media (max-width: 992px) {
+  .mcp-sidebar {
+    display: none;
+  }
+  
+  .mcp-content {
+    margin-left: 0;
+    padding: 1.5rem;
+  }
+}
+
+/* Task and issue items */
+.task-item, .issue-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--btg-border-primary);
+}
+
+.task-item:hover, .issue-item:hover {
+  background-color: rgba(255, 255, 255, 0.03); /* Subtle grey hover effect */
+}
+
+.task-item:last-child, .issue-item:last-child {
+  border-bottom: none;
+}
+
+.task-item.completed .task-text, 
+.issue-item.completed .issue-text {
+  text-decoration: line-through;
+  opacity: 0.7;
+}

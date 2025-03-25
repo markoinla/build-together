@@ -1,0 +1,75 @@
+<!-- Issue Item with DaisyUI Classes -->
+<div class="card bg-base-100 shadow-sm py-4" id="issue-{{ issue.id }}" data-issue-id="{{ issue.id }}">
+    <div class="flex justify-between items-start mb-2">
+        <div class="flex items-center gap-2">
+            <div class="form-control">
+                <input type="checkbox" 
+                class="checkbox checkbox-sm" 
+                id="issue-checkbox-{{ issue.id }}" 
+                {{ 'checked' if issue.completed else '' }}
+                hx-post="/htmx/issues/{{ issue.id }}/toggle"
+                hx-target="#appMainContainer"
+                hx-swap="innerHTML"
+                hx-preserve="true"
+                name="completed">
+            </div>
+            <span class="text-info font-semibold">Issue #{{ issue.id }}</span>
+            <!-- Star icon that toggles starred status -->
+            <div class="cursor-pointer ml-2 text-gray-500 tooltip tooltip-bottom" 
+                    data-tip="Toggle starred status"
+                    hx-put="/htmx/issues/{{ issue.id }}/star"
+                    hx-target="#appMainContainer"
+                    hx-swap="innerHTML"
+                    hx-preserve="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="{{ 'text-warning' if issue.starred }}" width="1.2em" height="1.2em" >
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+        </div>
+        <div class="issue-actions flex items-center gap-3">
+            <!-- Copy Issue ID Button -->
+            <div class="text-slate-200 hover:text-slate-400 cursor-pointer tooltip tooltip-top" 
+                 data-tip="Copy issue ID"
+                 x-data="{ 
+                    copyId: function() {
+                        const text = 'project-{{ issue.sprint.project.id }}.sprint-{{ issue.sprint.id }}.issue-{{ issue.id }}';
+                        navigator.clipboard.writeText(text);
+                        this.showTooltip = true;
+                        setTimeout(() => this.showTooltip = false, 1000);
+                    },
+                    showTooltip: false
+                 }">
+                <div class="relative" x-on:click="copyId">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" width="1.2em" height="1.2em">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5A3.375 3.375 0 0 0 6.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-1.5a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 0 0-9-9Z" />
+                    </svg>
+                    <div x-show="showTooltip" x-cloak class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-primary text-primary-content text-xs py-1 px-2 rounded shadow-md whitespace-nowrap">
+                        Copied!
+                    </div>
+                </div>
+            </div>
+            <div class="text-slate-200 hover:text-slate-400 cursor-pointer flex items-center justify-center tooltip tooltip-top" 
+                    data-tip="Edit issue"
+                    hx-get="/htmx/issues/{{ issue.id }}/edit"
+                    hx-target="#issue-{{ issue.id }}"
+                    hx-swap="outerHTML">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" width="1.2em" height="1.2em">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                    </svg>
+            </div>
+            <div class="text-slate-200 hover:text-error cursor-pointer flex items-center justify-center tooltip tooltip-top" 
+                    data-tip="Delete issue"
+                    hx-delete="/htmx/issues/{{ issue.id }}/delete"
+                    hx-target="#appMainContainer"
+                    hx-swap="innerHTML"
+                    hx-confirm="Are you sure you want to delete this issue?">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" width="1.2em" height="1.2em">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                      </svg>
+            </div>
+        </div>
+    </div>
+    <div class="flex items-center justify-start">
+        <div class="ml-8 hover:text-white {{ 'text-white/40' if issue.completed else 'text-white/80' }} prose markdown">{{ issue.details|markdown }}</div>
+    </div>
+</div>

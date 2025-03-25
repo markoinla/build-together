@@ -1,0 +1,53 @@
+<!-- Project Form -->
+<div class="p-8 mb-4">
+    <h3 class="text-lg font-semibold mb-4">{{ 'Edit Project' if project else 'Add New Project' }}</h3>
+    <form hx-{{ 'put' if project else 'post' }}="{{ '/htmx/projects/' + project.id|string if project else '/htmx/projects' }}" 
+          hx-target="{% if project %}#appMainContainer{% else %}#projectsContainer{% endif %}"
+          hx-swap="innerHTML"
+          hx-preserve="true"
+          data-form-id="project-edit-form-container-{{ project.id if project else '' }}"
+          hx-on:htmx:after-request="
+            if(event.detail.successful) { 
+                closeFormContainer('project-edit-form-container-{{ project.id if project else 'project-form-container' }}');
+            }">
+        <div class="space-y-2 mb-4">
+            <label for="projectName" class="block text-xl font-medium">Project Name</label>
+            <input type="text" 
+                   class="input input-bordered w-full" 
+                   id="projectName" 
+                   name="name" 
+                   value="{{ project.name if project else '' }}"
+                   required>
+        </div>
+        <div class="space-y-2 mb-4">
+            <label for="projectDescription" class="block font-medium">Description (Optional)</label>
+            <textarea class="textarea w-full min-h-[6rem] auto-expand" 
+                      id="projectDescription" 
+                      name="description">{{ project.description if project else '' }}</textarea>
+        </div>
+        <div class="space-y-2 mb-4">
+            <label for="projectRequirements" class="block font-medium">Requirements (Optional)</label>
+            <textarea class="textarea w-full min-h-[6rem] auto-expand" 
+                      id="projectRequirements" 
+                      name="requirements">{{ project.requirements if project else '' }}</textarea>
+        </div>
+        <div class="space-y-2 mb-4">
+            <label for="projectImplementationDetails" class="block font-medium">Implementation Details (Optional)</label>
+            <textarea class="textarea w-full min-h-[6rem] auto-expand" 
+                      id="projectImplementationDetails" 
+                      name="implementation_details">{{ project.implementation_details if project else '' }}</textarea>
+        </div>
+        <div class="flex justify-end gap-2">
+            <button type="button" 
+                    class="btn btn-sm btn-ghost" 
+                    data-form-id="project-edit-form-container-{{ project.id if project else '' }}"
+                    onclick="closeFormContainer(this.dataset.formId || 'project-form-container')">
+                Cancel
+            </button>
+            <button type="submit" class="btn btn-sm btn-primary">
+                <span class="loading loading-spinner loading-xs hidden" id="{{ 'edit-form-indicator' if project else 'form-indicator' }}"></span>
+                {{ 'Update Project' if project else 'Save Project' }}
+            </button>
+        </div>
+    </form>
+</div>

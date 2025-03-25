@@ -1,0 +1,17 @@
+Flask>=3.0.0
+SQLAlchemy>=2.0.20
+Flask-SQLAlchemy>=3.1.0
+Flask-Migrate>=4.0.0
+Flask-WTF>=1.1.0
+WTForms>=3.0.0
+python-dotenv>=1.0.0
+flask-cors>=4.0.0
+markdown>=3.7.0
+bleach>=6.2.0
+markupsafe>=3.0.0
+httpx>=0.24.0
+# For the MCP server
+pydantic>=2.0.0
+
+# For testing (optional but recommended)
+pytest>=7.4.0

@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Project Form Container -->
+<div id="project-form-container"></div>
+
+<!-- Main Content -->
+<div id="appMainContainer" class="w-full">
+  {% with projects=[project] %}
+    {% include 'partials/projects_list.html' %}
+  {% endwith %}
+</div>
+
+<!-- Sprint Detail Content for HTMX updates -->
+<div id="sprint-detail-content"></div>
+{% endblock %}
+
+{% block sidebar %}
+  <!-- Include the sprint sidebar here -->
+  {% include 'partials/sidebar.html' %}
+{% endblock %}
+
+{% block modals %}
+<!-- Sprint Modal -->
+<div class="modal fade" id="sprintModal" tabindex="-1" aria-labelledby="sprintModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sprintModalLabel">New Sprint</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="sprintForm">
+                    <input type="hidden" id="sprintId" name="sprintId" value="">
+                    <input type="hidden" id="projectId" name="projectId" value="">
+                    <div class="mb-3">
+                        <label for="sprintName" class="form-label">Sprint Name</label>
+                        <input type="text" class="form-control" id="sprintName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sprintDescription" class="form-label">Description (Optional)</label>
+                        <textarea class="form-control" id="sprintDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sprintStatus" class="form-label">Status</label>
+                        <select class="form-select" id="sprintStatus" name="status">
+                            <option value="Planned">Planned</option>
+                            <option value="Active">Active</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveSprintBtn">Save Sprint</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Task Modal -->
+<div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="taskModalLabel">New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm">
+                    <input type="hidden" id="taskId" name="taskId" value="">
+                    <input type="hidden" id="taskSprintId" name="sprintId" value="">
+                    <div class="mb-3">
+                        <label for="taskDetails" class="form-label">Task Details</label>
+                        <textarea class="form-control" id="taskDetails" name="details" rows="3" required></textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="taskCompleted" name="completed">
+                        <label class="form-check-label" for="taskCompleted">
+                            Completed
+                        </label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="taskStarred" name="starred">
+                        <label class="form-check-label" for="taskStarred">
+                            Star as Important
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveTaskBtn">Save Task</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Issue Modal -->
+<div class="modal fade" id="issueModal" tabindex="-1" aria-labelledby="issueModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="issueModalLabel">New Issue</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="issueForm">
+                    <input type="hidden" id="issueId" name="issueId" value="">
+                    <input type="hidden" id="issueSprintId" name="sprintId" value="">
+                    <div class="mb-3">
+                        <label for="issueDetails" class="form-label">Issue Details</label>
+                        <textarea class="form-control" id="issueDetails" name="details" rows="3" required></textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="issueCompleted" name="completed">
+                        <label class="form-check-label" for="issueCompleted">
+                            Completed
+                        </label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="issueStarred" name="starred">
+                        <label class="form-check-label" for="issueStarred">
+                            Star as Important
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveIssueBtn">Save Issue</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

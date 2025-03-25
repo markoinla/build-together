@@ -1,0 +1,207 @@
+<!-- 
+    Sidebar Management Component
+    
+    Styled to match minimal, modern aesthetics like ChatGPT's sidebar.
+    Organized by sprint status with clear section headers.
+    
+    Expected variables:
+    - project: The project object containing the sprints
+    - current_sprint_id (optional): ID of the currently selected sprint
+-->
+
+<div class="bg-base-200 min-h-full w-80 text-base-content overflow-y-auto flex flex-col"
+     x-data="{ 
+        activeSectionsOpen: localStorage.getItem('sidebar-active-section') !== 'false', 
+        plannedSectionsOpen: localStorage.getItem('sidebar-planned-section') !== 'false',
+        completedSectionsOpen: localStorage.getItem('sidebar-completed-section') !== 'false',
+        toggleActiveSection() {
+            this.activeSectionsOpen = !this.activeSectionsOpen;
+            localStorage.setItem('sidebar-active-section', this.activeSectionsOpen);
+        },
+        togglePlannedSection() {
+            this.plannedSectionsOpen = !this.plannedSectionsOpen;
+            localStorage.setItem('sidebar-planned-section', this.plannedSectionsOpen);
+        },
+        toggleCompletedSection() {
+            this.completedSectionsOpen = !this.completedSectionsOpen;
+            localStorage.setItem('sidebar-completed-section', this.completedSectionsOpen);
+        }
+     }">
+    <!-- Sidebar Header with Close Button -->
+    <div class="mt-4 px-4 py-3">
+        <h3 class="text-xs font-semibold uppercase tracking-wider opacity-70">Current Project</h3>
+    </div>
+    <div class="px-4 border-b border-base-300 flex justify-between items-center">
+        <a href="{{ url_for('main.project_detail', project_id=project.id) }}" class="hover:opacity-80 transition-opacity">
+            <h2 class="font-semibold text-lg">{{ project.name }}</h2>
+        </a>
+        
+        <!-- Close Sidebar Button (Hamburger Menu) 
+        <button @click="sidebarOpen = false; localStorage.setItem('sidebarOpen', false)" 
+                class="btn btn-ghost p-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>-->
+    </div>
+    
+    <!-- Sidebar Actions -->
+    <div class="px-4 py-3 border-b border-base-300">
+        <div class="flex gap-2">
+            <!-- New Sprint Button -->
+            <button class="btn btn-ghost btn-sm flex-1 justify-center gap-2 text-base-content hover:bg-base-300 transition-colors duration-200"
+                    @click="$dispatch('open-modal', {
+                        id: 'sprint-form-modal', 
+                        title: 'Create New Sprint', 
+                        url: '/htmx/sprints/form?project_id={{ project.id }}'
+                    })">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="1.2em" height="1.2em">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                New Sprint
+            </button>
+            
+            <!-- View Projects Button -->
+            <a href="{{ url_for('main.index') }}" class="btn btn-ghost btn-sm flex-1 justify-center gap-2 text-base-content hover:bg-base-300 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="1.2em" height="1.2em">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                </svg>
+                Projects
+            </a>
+        </div>
+    </div>
+    
+    <!-- Sprint List - Organized by Status -->
+    <div class="overflow-y-auto flex-grow">
+        <div class="px-4 py-3">
+            <h3 class="text-xs font-semibold uppercase tracking-wider opacity-70">Sprints</h3>
+        </div>
+        {% if project.sprints %}
+            {# Get active sprints #}
+            {% set active_sprints = project.sprints|selectattr('status', 'equalto', 'Active')|list %}
+            {# Get planned sprints #}
+            {% set planned_sprints = project.sprints|selectattr('status', 'equalto', 'Planned')|list %}
+            {# Get completed sprints #}
+            {% set completed_sprints = project.sprints|selectattr('status', 'equalto', 'Completed')|list %}
+            
+            {# Active Sprints Section #}
+            {% if active_sprints %}
+                <!-- Active Sprints Header - Collapsible -->
+                <div class="px-4 pt-3 pb-1 cursor-pointer flex justify-between items-center" @click="toggleActiveSection()">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider flex items-center">
+                        <div class="w-2 h-2 bg-primary rounded-full mr-2"></div>
+                        Active
+                    </h3>
+                    <!-- Chevron Icon - Rotates based on section state -->
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4" :class="activeSectionsOpen ? 'rotate-180' : ''">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </div>
+                <!-- Active Sprints Content - Collapsible -->
+                <div class="p-1" x-show="activeSectionsOpen" x-transition>
+                    {% for sprint in active_sprints|sort(attribute='created_at', reverse=True) %}
+                        <a href="{{ url_for('main.sprint_detail', project_id=project.id, sprint_id=sprint.id) }}"
+                           data-tip="{{ sprint.name }}" 
+                           class="flex flex-col w-full px-3 py-2 rounded-lg mb-1 tooltip hover:bg-base-300 transition-colors duration-200 {% if current_sprint_id == sprint.id %}bg-base-300 font-medium{% endif %}">
+                            
+                            <!-- Main Sprint Info -->
+                            <div class="flex items-center gap-2 w-full">
+                                <!-- Sprint Name -->
+                                <span class="text-base flex-grow truncate">{{ sprint.name }}</span>
+                            </div>
+                            
+                            <!-- Sprint Stats - Small and Subtle -->
+                            <div class="flex gap-2 mt-1 text-xs opacity-70">
+                                <span>Open:</span>
+                                <span><span class="font-medium">{{ sprint.tasks.count() - sprint.tasks.filter_by(completed=True).count() if sprint.tasks is defined else 0 }}</span> tasks</span>
+                                <span><span class="font-medium">{{ sprint.issues.count() - sprint.issues.filter_by(completed=True).count() if sprint.issues is defined else 0 }}</span> issues</span>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {# Planned Sprints Section #}
+            {% if planned_sprints %}
+                <!-- Planned Sprints Header - Collapsible -->
+                <div class="px-4 pt-3 pb-1 cursor-pointer flex justify-between items-center" @click="togglePlannedSection()">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider flex items-center">
+                        <div class="w-2 h-2 bg-secondary rounded-full mr-2"></div>
+                        Planned
+                    </h3>
+                    <!-- Chevron Icon - Rotates based on section state -->
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4" :class="plannedSectionsOpen ? 'rotate-180' : ''">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </div>
+                <!-- Planned Sprints Content - Collapsible -->
+                <div class="p-1" x-show="plannedSectionsOpen" x-transition>
+                    {% for sprint in planned_sprints|sort(attribute='created_at', reverse=True) %}
+                        <a href="{{ url_for('main.sprint_detail', project_id=project.id, sprint_id=sprint.id) }}"
+                        data-tip="{{ sprint.name }}" 
+                           class="flex flex-col w-full px-3 py-2 rounded-lg mb-1 tooltip tooltip-top hover:bg-base-300 transition-colors duration-200 {% if current_sprint_id == sprint.id %}bg-base-300 font-medium{% endif %}">
+                            
+                            <!-- Main Sprint Info -->
+                            <div class="flex items-center gap-2 w-full">
+                                <!-- Sprint Name -->
+                                <span class="text-base flex-grow truncate">{{ sprint.name }}</span>
+                            </div>
+                            
+                            <!-- Sprint Stats - Small and Subtle -->
+                            <div class="flex gap-2 mt-1 text-xs opacity-70">
+                                <span>Open:</span>
+                                <span><span class="font-medium">{{ sprint.tasks.count() - sprint.tasks.filter_by(completed=True).count() if sprint.tasks is defined else 0 }}</span> tasks</span>
+                                <span><span class="font-medium">{{ sprint.issues.count() - sprint.issues.filter_by(completed=True).count() if sprint.issues is defined else 0 }}</span> issues</span>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {# Completed Sprints Section #}
+            {% if completed_sprints %}
+                <!-- Completed Sprints Header - Collapsible -->
+                <div class="px-4 pt-3 pb-1 cursor-pointer flex justify-between items-center" @click="toggleCompletedSection()">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider flex items-center">
+                        <div class="w-2 h-2 bg-success rounded-full mr-2"></div>
+                        Completed
+                    </h3>
+                    <!-- Chevron Icon - Rotates based on section state -->
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4" :class="completedSectionsOpen ? 'rotate-180' : ''">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </div>
+                <!-- Completed Sprints Content - Collapsible -->
+                <div class="p-1" x-show="completedSectionsOpen" x-transition>
+                    {% for sprint in completed_sprints|sort(attribute='created_at', reverse=True) %}
+                        <a href="{{ url_for('main.sprint_detail', project_id=project.id, sprint_id=sprint.id) }}"
+                            data-tip="{{ sprint.name }}" 
+                           class="flex flex-col w-full px-3 py-2 rounded-lg mb-1 tooltip tooltip-top hover:bg-base-300 transition-colors duration-200 {% if current_sprint_id == sprint.id %}bg-base-300 font-medium{% endif %}">
+                            
+                            <!-- Main Sprint Info -->
+                            <div class="flex items-center gap-2 w-full">
+                                <!-- Sprint Name -->
+                                <span class="text-base flex-grow truncate">{{ sprint.name }}</span>
+                            </div>
+                            
+                            <!-- Sprint Stats - Small and Subtle -->
+                            <div class="flex gap-2 mt-1 text-xs opacity-70">
+                                <span>Open:</span>
+                                <span><span class="font-medium">{{ sprint.tasks.count() - sprint.tasks.filter_by(completed=True).count() if sprint.tasks is defined else 0 }}</span> tasks</span>
+                                <span><span class="font-medium">{{ sprint.issues.count() - sprint.issues.filter_by(completed=True).count() if sprint.issues is defined else 0 }}</span> issues</span>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="flex flex-col items-center justify-center h-32 text-center opacity-60 p-4">
+                <p class="text-sm">No sprints yet</p>
+                <p class="text-xs mt-2">Create a new sprint to get started</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Sprint Form Container -->
+<div id="sprint-form-container"></div>

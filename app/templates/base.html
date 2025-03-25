@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Build Together (BTG) - AI Project Management{% endblock %}</title>
+    <!-- Tailwind CSS (locally compiled with DaisyUI) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
+    <style>
+        /* Hide elements until Alpine.js is loaded */
+        [x-cloak] { display: none !important; }
+        
+        /* CSS for sidebar push functionality */
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100vh;
+          width: 20rem; /* 80px */
+          background-color: var(--b2);
+          transform: translateX(-100%);
+          z-index: 20;
+          overflow-y: auto;
+          box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* No transitions class for initial page load */
+        html.no-transitions .sidebar,
+        html.no-transitions .main-content {
+          transition: none !important;
+        }
+        
+        /* Class for enabling transitions after initial page load */
+        html.transitions-enabled .sidebar {
+          transition: transform 0.3s ease-in-out;
+        }
+        
+        html.transitions-enabled .main-content {
+          transition: padding-left 0.3s ease-in-out;
+        }
+        
+        .sidebar-open .sidebar {
+          transform: translateX(0);
+        }
+        
+        .main-content {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .sidebar-open .main-content {
+          padding-left: 20rem; /* 80px */
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="min-h-screen text-base-content no-transitions">
+      
+    <!-- Custom Sidebar Implementation -->
+    <div id="appContainer">
+      <script>
+        // Simple JavaScript for sidebar functionality
+        document.addEventListener('DOMContentLoaded', function() {
+          // Get stored sidebar state or default to open
+          const sidebarOpen = localStorage.getItem('sidebarOpen') !== 'false';
+          const isDashboard = window.location.pathname === '/' || window.location.pathname === '/projects';
+          
+          // Apply no-transitions class initially
+          document.documentElement.classList.add('no-transitions');
+          
+          // Set initial state
+          document.documentElement.classList.toggle('sidebar-open', sidebarOpen && !isDashboard);
+          
+          // Remove no-transitions class after a brief delay
+          // This ensures the initial state is rendered without animations
+          setTimeout(() => {
+            document.documentElement.classList.remove('no-transitions');
+            document.documentElement.classList.add('transitions-enabled');
+          }, 300);
+          
+          // Toggle function
+          window.toggleSidebar = function() {
+            const currentState = document.documentElement.classList.contains('sidebar-open');
+            const newState = !currentState;
+            document.documentElement.classList.toggle('sidebar-open', newState);
+            localStorage.setItem('sidebarOpen', newState);
+          };
+        });
+      </script>
+      
+      <!-- Main Content Area -->
+      <div class="main-content">
+        <!-- Navigation -->
+        <div class="text-primary-content">
+          <div class="navbar bg-base-100 px-8">
+            <div class="flex-1 flex items-center">
+              <!-- Hamburger Menu Button -->
+              <button onclick="toggleSidebar()" 
+                      class="btn btn-ghost mr-2" 
+                      id="sidebarToggleBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+              </button>
+              
+              <script>
+                // Show the sidebar toggle button only when needed
+                document.addEventListener('DOMContentLoaded', function() {
+                  const isDashboard = window.location.pathname === '/' || window.location.pathname === '/projects';
+                  const toggleBtn = document.getElementById('sidebarToggleBtn');
+                  
+                  // Hide the toggle button on dashboard page
+                  if (isDashboard) {
+                    toggleBtn.style.display = 'none';
+                  } else {
+                    toggleBtn.style.display = 'block';
+                  }
+                });
+              </script>
+              
+              <!-- Brand/Logo -->
+              <a href="{{ url_for('main.index') }}" class="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V19.5a2.25 2.25 0 0 0 2.25 2.25h.75m0-3H12m-.75 3h3.75m-3.75 0V18" />
+                  </svg>
+                  <span class="text-xl">Build Together</span>
+              </a>
+            </div>
+            
+            <!-- Right side actions -->
+            <div class="flex-none gap-4 hidden">
+              <!-- Theme Toggle -->
+              <button class="btn btn-sm btn-ghost" aria-label="Toggle Dark Mode">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="1.2em" height="1.2em">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="1.2em" height="1.2em">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="mx-auto w-full max-w-6xl px-4">
+            {% block content %}{% endblock %}
+        </main>
+        
+        <!-- Modal containers -->
+        {% with modal_id="sprint-form-modal", default_title="Create New Sprint" %}
+            {% include 'partials/modal.html' %}
+        {% endwith %}
+        
+        <!-- Modals -->
+        {% block modals %}{% endblock %}
+      </div>
+      
+      <!-- Sidebar Content (fixed position, will not overlay) -->
+      <div class="sidebar">
+        {% block sidebar %}{% endblock %}
+      </div>
+    </div>
+
+    <!-- HTMX -->
+    <script src="{{ url_for('static', filename='vendor/js/htmx.min.js') }}"></script>
+    <!-- Configure HTMX -->
+    <script>
+        htmx.config.defaultSettleDelay = 0;
+        htmx.config.scrollBehavior = 'smooth';
+    </script>
+    <!-- Alpine.js and Plugins -->
+    <script defer src="{{ url_for('static', filename='vendor/js/alpine.min.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='vendor/js/alpine-collapse.min.js') }}"></script>
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

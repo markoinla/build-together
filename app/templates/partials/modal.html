@@ -1,0 +1,47 @@
+<!-- DaisyUI Modal Component -->
+<!-- Modal controller using Alpine.js -->
+<div x-data="{ 
+    open: false,
+    title: '{{ default_title|default('') }}',
+    loadContent: function(url) {
+        if (url) {
+            htmx.ajax('GET', url, {target: '#{{ modal_id }}-content'});
+        }
+    }
+}" 
+     @open-modal.window="
+        if($event.detail.id === '{{ modal_id }}') {
+            open = true;
+            title = $event.detail.title || '{{ default_title|default('') }}';
+            loadContent($event.detail.url);
+        }
+     "
+     @close-modal.window="
+        if($event.detail.id === '{{ modal_id }}' || !$event.detail.id) {
+            open = false;
+        }
+     ">
+
+    <!-- Modal background overlay -->
+    <div class="modal" :class="{'modal-open': open}">
+        <div class="modal-box">
+            <!-- Close button -->
+            <button class="btn btn-sm btn-circle absolute right-2 top-2" @click="open = false">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            
+            <!-- Modal Title -->
+            <h3 class="font-bold text-lg mb-4" x-text="title"></h3>
+            
+            <!-- Modal Content -->
+            <div id="{{ modal_id }}-content" class="modal-content">
+                {{ content|safe if content else "" }}
+            </div>
+        </div>
+        
+        <!-- Background overlay click handler -->
+        <label class="modal-backdrop" @click="open = false"></label>
+    </div>
+</div>

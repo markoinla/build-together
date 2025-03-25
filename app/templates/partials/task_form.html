@@ -1,0 +1,62 @@
+<!-- Task Form with DaisyUI Classes -->
+<div class="card bg-base-100 shadow-sm p-4" id="{{ 'task-' + task.id|string if task else 'task-form-container-' + sprint_id|string }}">
+    <h3 class="text-lg font-semibold mb-4">{{ 'Edit Task' if task else 'Add New Task' }}</h3>
+    <form id="htmx-task-form" 
+          hx-{{ 'put' if task else 'post' }}="{{ '/htmx/tasks/' + task.id|string + '/update' if task else '/htmx/tasks/create' }}" 
+          hx-target="#appMainContainer" 
+          hx-swap="innerHTML"
+          hx-preserve="true"
+          data-form-id="{{ 'task-' + task.id|string if task else 'task-form-container-' + sprint_id|string }}"
+          hx-on::after-request="if(event.detail.successful) { closeFormContainer(this.dataset.formId); }">
+        <input type="hidden" name="sprint_id" value="{{ task.sprint_id if task else sprint_id }}">
+        
+        <!-- Task Details -->
+        <div class="form-control mb-4">
+            <label for="task-details-{{ task.id|string if task else sprint_id|string }}" class="label">
+                <span class="label-text font-medium">Task Details <span class="text-error">*</span></span>
+            </label>
+            <textarea class="textarea textarea-bordered w-full min-h-[6rem] auto-expand" 
+                      id="task-details-{{ task.id if task else sprint_id }}" 
+                      name="details" 
+                      required>{{ task.details if task else '' }}</textarea>
+        </div>
+
+        <!-- Task Status -->
+        <div class="form-control mb-4">
+            <label class="label cursor-pointer justify-start gap-2">
+                <input type="checkbox" 
+                       class="checkbox checkbox-sm" 
+                       id="task-completed-{{ task.id if task else sprint_id }}" 
+                       name="completed"
+                       {{ 'checked' if task and task.completed else '' }}>
+                <span class="label-text font-medium">Mark as Completed</span>
+            </label>
+
+            <label class="label cursor-pointer pl-4 justify-start gap-2">
+                <input type="checkbox" 
+                       class="checkbox checkbox-sm" 
+                       id="task-starred-{{ task.id if task else sprint_id }}" 
+                       name="starred"
+                       {{ 'checked' if task and task.starred else '' }}>
+                <span class="label-text font-medium flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="text-warning" width="1.2em" height="1.2em">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
+                    </svg>
+                    Mark as Important
+                </span>
+            </label>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex justify-end gap-2">
+            <button type="button" 
+                    class="btn btn-ghost"
+                    onclick="closeFormContainer(this.closest('form').dataset.formId)">
+                Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">
+                {{ 'Save Changes' if task else 'Save Task' }}
+            </button>
+        </div>
+    </form>
+</div>

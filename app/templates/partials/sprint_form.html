@@ -1,0 +1,60 @@
+<!-- Sprint Form -->
+<div class="mb-4">
+    <h3 class="font-bold mb-4">{{ 'Edit Sprint' if sprint else '' }}</h3>
+    <form hx-{{ 'put' if sprint else 'post' }}="{{ '/htmx/sprints/' + sprint.id|string if sprint else '/htmx/sprints' }}" 
+          hx-target="#appMainContainer" 
+          hx-swap="innerHTML"
+          hx-preserve="true"
+          data-form-id="{{ 'sprint-edit-form-container-' + sprint.id|string if sprint else 'sprint-form-container-' + project.id|string }}"
+          hx-on:htmx:after-request="
+            if(event.detail.successful) { 
+                // Close the form container as before
+                closeFormContainer(this.dataset.formId);
+                
+                // Also close the modal if it exists
+                $dispatch('close-modal', {id: 'sprint-form-modal'});
+            }">
+        <input type="hidden" name="project_id" value="{{ sprint.project_id if sprint else project.id }}">
+        <!-- Add a hidden source field to identify modal submissions -->
+        <input type="hidden" name="source" value="sidebar_modal">
+        <div class="space-y-2 mb-4">
+            <label for="sprintName" class="block font-medium">Sprint Name</label>
+            <input type="text" 
+                   class="input input-bordered w-full" 
+                   id="sprintName" 
+                   name="name" 
+                   value="{{ sprint.name if sprint else '' }}" 
+                   required>
+        </div>
+        <div class="space-y-2 mb-4">
+            <label for="sprintStatus" class="block font-medium">Status</label>
+            <select class="select select-bordered w-full text-left" 
+                    id="sprintStatus" 
+                    name="status"
+                    style="padding-right: 2.5rem; text-overflow: ellipsis;">
+                <option value="Planned" {{ 'selected' if sprint and sprint.status == 'Planned' else '' }}>Planned</option>
+                <option value="Active" {{ 'selected' if sprint and sprint.status == 'Active' else '' }}>Active</option>
+                <option value="Completed" {{ 'selected' if sprint and sprint.status == 'Completed' else '' }}>Completed</option>
+            </select>
+        </div>
+        <div class="space-y-2 mb-4">
+            <label for="sprintDescription" class="block font-medium">Description</label>
+            <textarea class="textarea textarea-bordered w-full min-h-[6rem] auto-expand" 
+                      id="sprintDescription" 
+                      name="description" 
+                      rows="3">{{ sprint.description if sprint else '' }}</textarea>
+        </div>
+        <div class="flex justify-end gap-2">
+            {% if not is_modal|default(false) %}
+            <button type="button" 
+                    class="btn btn-sm btn-ghost" 
+                    onclick="closeFormContainer(this.closest('form').dataset.formId)">
+                Cancel
+            </button>
+            {% endif %}
+            <button type="submit" class="btn btn-sm btn-primary">
+                {{ 'Save Changes' if sprint else 'Save Sprint' }}
+            </button>
+        </div>
+    </form>
+</div>

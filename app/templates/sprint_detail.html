@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{{ sprint.name }} - Build Together{% endblock %}
+
+{% block sidebar %}
+  <!-- Include the sidebar -->
+  {% include 'partials/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="">
+    <!-- Sprint Detail Container -->
+    <div id="appMainContainer">
+        {% include 'partials/sprint.html' with context %}
+    </div>
+</div>
+{% endblock %}

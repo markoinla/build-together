@@ -1,0 +1,349 @@
+/* BTG Custom Styles */
+
+/* General Styles */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  flex: 1;
+}
+
+/* Container max-width for light mode */
+.container {
+  max-width: 1000px !important;
+  padding: 0 1rem !important;
+  margin: 0 auto !important;
+}
+
+/* Navigation Bar - Match dark mode spacing exactly */
+.navbar {
+  background-color: #007bff !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.8rem 1rem;
+  box-shadow: none;
+}
+
+.navbar-brand {
+  color: #fff !important;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  padding: 0.5rem 1rem;
+}
+
+/* Project Container Spacing */
+#projectsContainer {
+  margin-top: 1.5rem !important;
+}
+
+/* Project spacing - Match dark mode */
+.card-header {
+  padding: 1rem 1.25rem;
+  background-color: transparent;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.card-footer {
+  padding: 0.75rem 1.25rem;
+  background-color: transparent;
+}
+
+/* Project Card Styles */
+.project-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 1.5rem;
+}
+
+.project-card .card-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.project-card .card-text {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+.project-card {
+  transform: translateY(0px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.project-card .card-header {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+/* Sprint Card Styles */
+.sprint-card {
+  border-radius: 6px;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  margin-bottom: 1rem;
+}
+
+.sprint-header {
+  cursor: pointer;
+  background-color: #f1f3f5;
+  transition: background-color 0.2s;
+}
+
+.sprint-header {
+  background-color: #f1f3f5;
+}
+
+.toggle-icon {
+  transition: transform 0.3s;
+}
+
+.collapsed .toggle-icon {
+  transform: rotate(-90deg);
+}
+
+/* Collapsible sections styling */
+.collapsible-header {
+  cursor: pointer;
+  padding: 8px 0;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.collapsible-header {
+  background-color: transparent;
+}
+
+.collapsible-header h5 {
+  margin-bottom: 0;
+}
+
+.collapsible-header .btn-link {
+  color: #6c757d;
+  transition: transform 0.2s ease;
+}
+
+.collapsible-header .btn-link {
+  color: #6c757d;
+}
+
+/* Sprint header collapsible styling */
+.sprint-header {
+  cursor: pointer;
+}
+
+.sprint-header .toggle-icon {
+  transition: transform 0.2s ease;
+}
+
+/* Transition animations for collapsible content */
+/* Alpine.js transition classes */
+.transition {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.duration-150 {
+  transition-duration: 150ms;
+}
+
+.duration-200 {
+  transition-duration: 200ms;
+}
+
+.duration-300 {
+  transition-duration: 300ms;
+}
+
+.ease-in {
+  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+}
+
+.ease-out {
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+.transform {
+  --transform-translate-x: 0;
+  --transform-translate-y: 0;
+  --transform-rotate: 0;
+  --transform-skew-x: 0;
+  --transform-skew-y: 0;
+  --transform-scale-x: 1;
+  --transform-scale-y: 1;
+  transform: translateX(var(--transform-translate-x)) translateY(var(--transform-translate-y)) rotate(var(--transform-rotate)) skewX(var(--transform-skew-x)) skewY(var(--transform-skew-y)) scaleX(var(--transform-scale-x)) scaleY(var(--transform-scale-y));
+}
+
+.scale-95 {
+  --transform-scale-x: .95;
+  --transform-scale-y: .95;
+}
+
+.scale-100 {
+  --transform-scale-x: 1;
+  --transform-scale-y: 1;
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+
+/* Task and Issue Item Styles */
+.task-item, .issue-item {
+  transition: background-color 0.2s;
+}
+
+.task-item:hover, .issue-item:hover {
+  background-color: #f8f9fa;
+}
+
+.task-actions, .issue-actions {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.2s, opacity 0.2s;
+}
+
+.issue-item:hover .issue-actions {
+  visibility: visible;
+  opacity: 1;
+}
+
+.task-item:hover .task-actions {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+/* Form Styles */
+.form-check-input:checked + .form-check-label {
+  text-decoration: line-through;
+  color: #6c757d;
+}
+
+/* Override line-through for starred checkboxes */
+.form-check-input[name="starred"]:checked + .form-check-label {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Empty State Styles */
+.text-muted {
+  color: #6c757d;
+}
+
+/* Markdown Content Styling */
+.project-description h1, 
+.project-requirements h1, 
+.project-implementation-details h1 {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.project-description h2, 
+.project-requirements h2, 
+.project-implementation-details h2 {
+  font-size: 1.3rem;
+  margin-top: 0.9rem;
+  margin-bottom: 0.6rem;
+  font-weight: 500;
+}
+
+.project-description h3, 
+.project-requirements h3, 
+.project-implementation-details h3 {
+  font-size: 1.15rem;
+  margin-top: 0.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.project-description h4, 
+.project-requirements h4, 
+.project-implementation-details h4 {
+  font-size: 1.05rem;
+  margin-top: 0.7rem;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}
+
+.project-description h5, 
+.project-requirements h5, 
+.project-implementation-details h5 {
+  font-size: 1rem;
+  margin-top: 0.6rem;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.project-description h6, 
+.project-requirements h6, 
+.project-implementation-details h6 {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+/* Additional markdown styling for consistency */
+.project-description p, 
+.project-requirements p, 
+.project-implementation-details p {
+  margin-bottom: 0.8rem;
+}
+
+.project-description ul, 
+.project-requirements ul, 
+.project-implementation-details ul,
+.project-description ol, 
+.project-requirements ol, 
+.project-implementation-details ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.project-description code, 
+.project-requirements code, 
+.project-implementation-details code {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  padding: 0.2em 0.4em;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 85%;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .task-actions, .issue-actions {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  .project-actions, .sprint-actions {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .project-actions .btn, .sprint-actions .btn {
+    margin-bottom: 0.5rem;
+  }
+}

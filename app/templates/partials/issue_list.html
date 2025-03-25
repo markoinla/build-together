@@ -1,0 +1,11 @@
+<div id="issue-list-{{ sprint.id }}" class="issue-list">
+    {% if sprint.get_sorted_issues() %}
+        {% for issue in sprint.get_sorted_issues() %}
+            {% include 'partials/issue_item.html' %}
+        {% endfor %}
+    {% else %}
+        <div class="py-3 text-muted no-issues-message">
+            <p>No issues created yet for this sprint.</p>
+        </div>
+    {% endif %}
+</div>

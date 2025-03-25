@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Dashboard Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">Project Dashboard</h2>
+        <button id="newProjectBtn" class="btn btn-outline btn-primary"
+               hx-get="/htmx/projects/form" 
+               hx-target="#project-form-container" 
+               hx-swap="innerHTML"
+               hx-preserve="true">
+            <i class="fas fa-plus mr-1"></i>New Project
+        </button>
+    </div>
+    
+    <!-- Project Form Container -->
+    <div id="project-form-container"></div>
+    
+    <!-- Projects Grid Container -->
+    <div id="projectsContainer">
+        <!-- Projects Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="projectsGrid">
+            {% if projects %}
+                {% for project in projects %}
+                    <div>
+                        {% include 'partials/project_card.html' %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-span-full text-center p-5 border rounded-lg">
+                    <h3 class="text-xl font-semibold mb-3">Welcome to Build Together (BTG)!</h3>
+                    <p class="mb-4">You don't have any projects yet. Create your first project to get started.</p>
+                    <button id="createFirstProjectBtn" class="btn btn-outline btn-primary" 
+                            hx-get="/htmx/projects/form" 
+                            hx-target="#project-form-container" 
+                            hx-swap="innerHTML"
+                            hx-preserve="true">
+                        <i class="fas fa-plus mr-1"></i>Create First Project
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Project Modal -->
+<div id="projectModal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg" id="projectModalLabel">New Project</h3>
+        <form id="projectForm" class="py-4">
+            <input type="hidden" id="projectId" name="projectId" value="">
+            <div class="form-control mb-4">
+                <label class="label" for="projectName">
+                    <span class="label-text">Project Name</span>
+                </label>
+                <input type="text" class="input input-bordered w-full" id="projectName" name="name" required>
+            </div>
+            <div class="form-control mb-4">
+                <label class="label" for="projectDescription">
+                    <span class="label-text">Description (Optional)</span>
+                </label>
+                <textarea class="textarea textarea-bordered h-24" id="projectDescription" name="description"></textarea>
+            </div>
+            <div class="modal-action">
+                <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveProjectBtn">Save Project</button>
+            </div>
+        </form>
+    </div>
+    <div class="modal-backdrop" onclick="closeModal()"></div>
+</div>
+
+<script>
+    // Simple modal control functions since we're not using Bootstrap's modal anymore
+    function closeModal() {
+        document.getElementById('projectModal').classList.remove('modal-open');
+    }
+    
+    function openModal() {
+        document.getElementById('projectModal').classList.add('modal-open');
+    }
+    
+    // Update the event listeners for the modal
+    document.addEventListener('DOMContentLoaded', function() {
+        // No longer open modal when "New Project" button is clicked
+        // Project form will be shown directly in the dashboard
+        
+        // Handle "Create First Project" button if it exists
+        const createFirstBtn = document.getElementById('createFirstProjectBtn');
+        if (createFirstBtn) {
+            createFirstBtn.addEventListener('click', function() {
+                // No longer open modal, load form directly in dashboard
+            });
+        }
+    });
+</script>
+{% endblock %}

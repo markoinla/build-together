@@ -1,0 +1,11 @@
+<div id="task-list-{{ sprint.id }}" class="task-list">
+    {% if sprint.get_sorted_tasks() %}
+        {% for task in sprint.get_sorted_tasks() %}
+            {% include 'partials/task_item.html' %}
+        {% endfor %}
+    {% else %}
+        <div class="py-3 text-muted no-tasks-message">
+            <p>No tasks created yet for this sprint.</p>
+        </div>
+    {% endif %}
+</div>
