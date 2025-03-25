@@ -43,6 +43,10 @@ Build Together is a project management tool for vibe coders. It's lightweight, s
 The easiest way to get started is to use the provided setup script:
 
 ```bash
+# Clone the repository
+git clone https://github.com/markoinla/build-together.git
+cd build-together
+
 # Make the setup script executable
 chmod +x setup.sh
 
@@ -102,28 +106,34 @@ The application will be available at http://127.0.0.1:3149 by default.
 
 If you prefer to set up manually:
 
-1. Create and activate a virtual environment:
+1. Clone the repository:
+```bash
+git clone https://github.com/markoinla/build-together.git
+cd build-together
+```
+
+2. Create and activate a virtual environment:
 ```bash
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-2. Install dependencies:
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Initialize the database:
+4. Initialize the database:
 ```bash
 python3 init_db.py
 ```
 
-4. Run the application:
+5. Run the application:
 ```bash
 flask run --port 3149
 ```
 
-5. In a separate terminal, run the MCP server:
+6. In a separate terminal, run the MCP server:
 ```bash
 ./mcp/run_mcp.sh
 ```
