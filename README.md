@@ -1,27 +1,40 @@
 # Build Together
 
-Build Together is a lightweight, self-hosted project management tool built for AI+Human collaboration with vibe coding in mind. It features a web interface, a REST API, and full Model Context Protocol (MCP) support for integration with AI coding assistants like Cursor, Claude Code, and Windsurf.
+Build Together is a project management tool for vibe coders. It's lightweight, self-hosted and built from the groundup for intuitive AI+Human collaboration. It features a dynamic web interface, a REST API, and full Model Context Protocol (MCP) support for use with AI coding assistants like Cursor, Claude Code, and Windsurf.
 
 ## Features
 
 - Create and manage projects with requirements and implementation details
 - Organize work into sprints with different statuses (Planned, Active, Completed)
 - Track tasks and issues with completion status
-- Star important tasks and issues for quick identification
+- Star important tasks and issues for quick identification (tell the AI assistant to work on all starred tasks)
 - RESTful API for all operations
 - MCP server for AI assistant integration
-- Responsive UI with Tailwind & DaisyUI styling
+- Responsive and dynamic UI with Tailwind & DaisyUI styling
 - HTMX for dynamic content updates without page reloads
 - Markdown support for rich text formatting in all detail fields
 
 ## Screenshots
 
-The Build Together application features a clean, intuitive interface:
+<img src="documentation/images/btg-project-details-min.jpg" alt="Project Details" width="800" />
 
-- **Project Dashboard**: View all your projects and their sprints
-- **Sprint View**: Manage tasks and issues within each sprint
-- **Task Management**: Create, edit, complete, and star tasks
-- **Issue Tracking**: Track and resolve issues that arise during development
+*Project Details View: Manage project information, sprints, tasks, and issues in one place.*
+
+<img src="documentation/images/btg-sprint-details-min.jpg" alt="Sprint Details" width="800" />
+
+*Sprint Details View: Track tasks and issues within each sprint with clear status indicators.*
+
+<img src="documentation/images/btg-create-sprint-min.jpg" alt="Create Sprint" width="800" />
+
+*Create Sprint View: Easily create new sprints with title, status, and description.*
+
+<img src="documentation/images/btg-edit-task-min.jpg" alt="Edit Task" width="800" />
+
+*Edit Task View: Update task details, status, and other properties.*
+
+<img src="documentation/images/btg-windsurf-min.jpg" alt="Windsurf Integration" width="800" />
+
+*Windsurf Integration: Use natural language to manage your projects through AI assistance.*
 
 ## Setup
 
@@ -44,6 +57,46 @@ This script will:
 4. Initialize the database with sample data
 5. Configure the MCP server
 6. Create a run script for easy application startup
+
+### Running the Application
+
+After setup is complete, you can run the application using:
+
+```bash
+# Start the main application
+./run.sh
+```
+
+The application will be available at http://127.0.0.1:3149 by default.
+
+### Setting Up with AI Assistants
+
+#### For Cursor
+
+1. Open the Build Together project in Cursor
+2. In Cursor, use the command palette (Cmd+Shift+P) and search for "Connect to MCP Server"
+3. When prompted for the MCP script path, point to `./mcp/run_mcp.sh`
+4. Cursor will automatically start and manage the MCP server for you
+5. You can now use natural language to manage your projects through Cursor
+
+#### For Windsurf
+
+1. Open the Build Together project in Windsurf
+2. Add the following configuration to your Windsurf MCP config file (located at `~/.codeium/windsurf/mcp_config.json`):
+   ```json
+   "buildtogether": {
+     "command": "/path/to/your/project/mcp/run_mcp.sh",
+     "args": [],
+     "env": {
+       "PYTHONUNBUFFERED": "1",
+       "PYTHONIOENCODING": "utf-8",
+       "BTG_BASE_URL": "http://127.0.0.1:3149"
+     }
+   }
+   ```
+   Make sure to replace `/path/to/your/project` with the actual path to your Build Together project.
+3. Restart Windsurf to apply the configuration
+4. You can now use natural language to manage your projects through Windsurf
 
 ### Manual Setup
 
@@ -187,7 +240,7 @@ curl -X POST http://127.0.0.1:3149/mcp/execute -H "Content-Type: application/jso
 
 Build Together includes full MCP (Model Context Protocol) support for seamless integration with AI assistants. This allows AI coding assistants to interact with your projects, sprints, tasks, and issues programmatically.
 
-### Setting Up MCP with Windsurf
+### Setting Up MCP
 
 1. Start the Build Together application:
 ```bash
@@ -313,6 +366,12 @@ flask db migrate -m "Description of changes"
 - All HTMX form submissions use the `hx-preserve` attribute to maintain the user's scroll position
 - The application uses Tailwind CSS and DaisyUI components for a clean, modern UI
 - Task and issue forms include a "Mark as important" option to set the starred status
+
+## Known Issues
+
+- AI assistants sometimes have trouble executing MCP commands or the MCP server requires multiple tool calls
+- Copy task/issue ID doesn't work within Windsurf Browser Preview
+- Various UX/UI improvements are needed
 
 ## License
 
