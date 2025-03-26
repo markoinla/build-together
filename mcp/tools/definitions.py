@@ -7,6 +7,13 @@ and the Flask application integration.
 
 Each tool follows the Model Context Protocol (MCP) standard for tool definitions,
 which includes a name, description, and input schema with proper validation rules.
+
+IMPORTANT NOTES FOR AI ASSISTANTS:
+1. When using these tools, do NOT include any prefix (like 'mcp0_') in the tool name
+2. Only include parameters that are explicitly defined in the inputSchema
+3. Do not include the 'status' parameter for list_projects unless filtering is needed
+4. If you encounter errors, try simplifying your request by removing optional parameters
+5. For tasks and issues, use the 'details' parameter (not 'title' or 'description')
 """
 
 from typing import Dict, Any, Optional
@@ -19,18 +26,13 @@ TOOLS = [
         "description": """List all projects in Build Together (BTG).
         
 Example:
-  Input: {"status": "Active"}
-  Output: List of active projects with their IDs, names, descriptions, and statuses.
+  Input: {}
+  Output: List of all projects with their IDs, names, descriptions, and other details.
   
-Use this tool to get an overview of projects in the system, filtered by their status if needed.""",
+Use this tool to get an overview of all projects in the system.""",
         "inputSchema": {
             "type": "object",
             "properties": {
-                "status": {
-                    "type": "string",
-                    "description": "Filter projects by status (Active, Completed, All)",
-                    "enum": ["Active", "Completed", "All"]
-                }
             }
         }
     },
@@ -59,10 +61,10 @@ Use this tool when you need comprehensive information about a single project."""
         "description": """Create a new project in Build Together.
         
 Example:
-  Input: {"name": "Website Redesign", "description": "Redesign company website", "status": "Active"}
+  Input: {"name": "Website Redesign", "description": "Redesign company website"}
   Output: Details of the newly created project including its assigned ID.
   
-Only the name is required; description and status are optional (status defaults to 'Active').""",
+Only the name is required; description is optional. Do not include a status parameter.""",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -73,39 +75,64 @@ Only the name is required; description and status are optional (status defaults 
                 "description": {
                     "type": "string",
                     "description": "Description of the project"
-                },
-                "status": {
-                    "type": "string",
-                    "description": "Status of the project (Active or Completed)",
-                    "enum": ["Active", "Completed"]
                 }
             },
             "required": ["name"]
         }
     },
     {
-        "name": "list_sprints",
-        "description": """List all sprints for a specific project.
+        "name": "update_project",
+        "description": """Update an existing project's details.
         
 Example:
-  Input: {"project_id": 1, "status": "Active"}
-  Output: List of active sprints for project #1 with their IDs, names, descriptions, and statuses.
+  Input: {"project_id": 1, "name": "Updated Project Name", "description": "Updated description"}
+  Output: Updated details of project #1.
   
-Use this tool to view all sprints within a project, optionally filtered by status.""",
+Only the project_id is required; provide only the fields you want to update.""",
         "inputSchema": {
             "type": "object",
             "properties": {
                 "project_id": {
                     "type": "integer",
-                    "description": "ID of the project to list sprints for"
+                    "description": "ID of the project to update"
                 },
-                "status": {
+                "name": {
                     "type": "string",
-                    "description": "Filter sprints by status",
-                    "enum": ["Planned", "Active", "Completed", "All"]
+                    "description": "New name of the project"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "New description of the project"
+                },
+                "requirements": {
+                    "type": "string",
+                    "description": "New requirements for the project"
+                },
+                "implementation_details": {
+                    "type": "string",
+                    "description": "New implementation details for the project"
                 }
             },
             "required": ["project_id"]
+        }
+    },
+    {
+        "name": "list_sprints",
+        "description": """List all sprints for a specific project or all sprints if no project is specified.
+        
+Example:
+  Input: {} or {"project_id": 1}
+  Output: List of sprints with their IDs, names, descriptions, and statuses.
+  
+The project_id is optional. If provided, only sprints for that project will be listed.""",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "project_id": {
+                    "type": "integer",
+                    "description": "Optional ID of the project to list sprints for"
+                }
+            }
         }
     },
     {
@@ -136,7 +163,7 @@ Example:
   Input: {"project_id": 1, "name": "Sprint 1", "description": "Initial development phase", "status": "Planned"}
   Output: Details of the newly created sprint including its assigned ID.
   
-The project_id and name are required; description and status are optional (status defaults to 'Planned').""",
+The project_id and name are required; description and status are optional. Status defaults to 'Planned' if not specified.""",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -154,7 +181,7 @@ The project_id and name are required; description and status are optional (statu
                 },
                 "status": {
                     "type": "string",
-                    "description": "Status of the sprint",
+                    "description": "Status of the sprint (defaults to 'Planned' if not specified)",
                     "enum": ["Planned", "Active", "Completed"]
                 }
             },
@@ -162,14 +189,51 @@ The project_id and name are required; description and status are optional (statu
         }
     },
     {
+        "name": "update_sprint",
+        "description": """Update an existing sprint's details.
+        
+Example:
+  Input: {"sprint_id": 5, "name": "Updated Sprint Name", "status": "Active"}
+  Output: Updated details of sprint #5.
+  
+Only the sprint_id is required; provide only the fields you want to update.""",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "sprint_id": {
+                    "type": "integer",
+                    "description": "ID of the sprint to update"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "New name of the sprint"
+                },
+                "project_id": {
+                    "type": "integer",
+                    "description": "New project ID for the sprint"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "New description of the sprint"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "New status of the sprint",
+                    "enum": ["Planned", "Active", "Completed"]
+                }
+            },
+            "required": ["sprint_id"]
+        }
+    },
+    {
         "name": "list_tasks",
         "description": """List all tasks for a specific sprint.
         
 Example:
-  Input: {"sprint_id": 5, "status": "In Progress"}
-  Output: List of in-progress tasks for sprint #5 with their IDs, titles, descriptions, and statuses.
+  Input: {"sprint_id": 5} or {"sprint_id": 5, "status": "In Progress"}
+  Output: List of tasks for sprint #5 with their IDs, titles, descriptions, and statuses.
   
-Use this tool to view all tasks within a sprint, optionally filtered by status.""",
+The sprint_id is required; status is optional and can be omitted to list all tasks.""",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -187,14 +251,34 @@ Use this tool to view all tasks within a sprint, optionally filtered by status."
         }
     },
     {
+        "name": "get_task",
+        "description": """Get detailed information about a specific task.
+        
+Example:
+  Input: {"task_id": 12}
+  Output: Complete details of task #12 including title, description, status, and priority.
+  
+Use this tool when you need comprehensive information about a single task.""",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "task_id": {
+                    "type": "integer",
+                    "description": "ID of the task to retrieve"
+                }
+            },
+            "required": ["task_id"]
+        }
+    },
+    {
         "name": "create_task",
         "description": """Create a new task within a sprint.
         
 Example:
-  Input: {"sprint_id": 5, "title": "Design homepage", "description": "Create mockups for homepage", "status": "Todo", "priority": "High"}
+  Input: {"sprint_id": 5, "details": "Design homepage - Create mockups for homepage"}
   Output: Details of the newly created task including its assigned ID.
   
-The sprint_id and title are required; description, status, and priority are optional (status defaults to 'Todo', priority to 'Medium').""",
+The sprint_id and details are required; status and priority are optional. Only include parameters that are needed.""",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -202,13 +286,9 @@ The sprint_id and title are required; description, status, and priority are opti
                     "type": "integer",
                     "description": "ID of the sprint to create the task in"
                 },
-                "title": {
+                "details": {
                     "type": "string",
-                    "description": "Title of the task"
-                },
-                "description": {
-                    "type": "string",
-                    "description": "Description of the task"
+                    "description": "Details of the task (required)"
                 },
                 "status": {
                     "type": "string",
@@ -219,9 +299,13 @@ The sprint_id and title are required; description, status, and priority are opti
                     "type": "string",
                     "description": "Priority of the task",
                     "enum": ["Low", "Medium", "High"]
+                },
+                "completed": {
+                    "type": "boolean",
+                    "description": "Whether the task is completed"
                 }
             },
-            "required": ["sprint_id", "title"]
+            "required": ["sprint_id", "details"]
         }
     },
     {
@@ -240,13 +324,9 @@ Only the task_id is required; provide only the fields you want to update. This i
                     "type": "integer",
                     "description": "ID of the task to update"
                 },
-                "title": {
+                "details": {
                     "type": "string",
-                    "description": "New title of the task"
-                },
-                "description": {
-                    "type": "string",
-                    "description": "New description of the task"
+                    "description": "New details of the task"
                 },
                 "status": {
                     "type": "string",
@@ -257,6 +337,10 @@ Only the task_id is required; provide only the fields you want to update. This i
                     "type": "string",
                     "description": "New priority of the task",
                     "enum": ["Low", "Medium", "High"]
+                },
+                "completed": {
+                    "type": "boolean",
+                    "description": "Whether the task is completed"
                 }
             },
             "required": ["task_id"]
@@ -267,10 +351,10 @@ Only the task_id is required; provide only the fields you want to update. This i
         "description": """List all issues for a sprint.
         
 Example:
-  Input: {"sprint_id": 5, "status": "Open"}
-  Output: List of open issues for sprint #5 with their IDs, titles, descriptions, and statuses.
+  Input: {"sprint_id": 5} or {"sprint_id": 5, "status": "Open"}
+  Output: List of issues for sprint #5 with their IDs, titles, descriptions, and statuses.
   
-Use this tool to view all issues within a sprint, optionally filtered by status.""",
+The sprint_id is required; status is optional and can be omitted to list all issues.""",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -288,14 +372,34 @@ Use this tool to view all issues within a sprint, optionally filtered by status.
         }
     },
     {
+        "name": "get_issue",
+        "description": """Get detailed information about a specific issue.
+        
+Example:
+  Input: {"issue_id": 8}
+  Output: Complete details of issue #8 including title, description, status, and severity.
+  
+Use this tool when you need comprehensive information about a single issue.""",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "issue_id": {
+                    "type": "integer",
+                    "description": "ID of the issue to retrieve"
+                }
+            },
+            "required": ["issue_id"]
+        }
+    },
+    {
         "name": "create_issue",
         "description": """Create a new issue within a sprint.
         
 Example:
-  Input: {"sprint_id": 5, "title": "Bug in login feature", "description": "Users cannot log in", "status": "Open", "severity": "High"}
+  Input: {"sprint_id": 5, "details": "Bug in login feature - Users cannot log in", "severity": "High"}
   Output: Details of the newly created issue including its assigned ID.
   
-The sprint_id and title are required; description, status, and severity are optional (status defaults to 'Open', severity to 'Medium').""",
+The sprint_id and details are required; severity and status are optional. Only include parameters that are needed.""",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -303,13 +407,9 @@ The sprint_id and title are required; description, status, and severity are opti
                     "type": "integer",
                     "description": "ID of the sprint to create the issue in"
                 },
-                "title": {
+                "details": {
                     "type": "string",
-                    "description": "Title of the issue"
-                },
-                "description": {
-                    "type": "string",
-                    "description": "Description of the issue"
+                    "description": "Details of the issue (required)"
                 },
                 "status": {
                     "type": "string",
@@ -320,9 +420,51 @@ The sprint_id and title are required; description, status, and severity are opti
                     "type": "string",
                     "description": "Severity of the issue",
                     "enum": ["Low", "Medium", "High", "Critical"]
+                },
+                "completed": {
+                    "type": "boolean",
+                    "description": "Whether the issue is completed/resolved"
                 }
             },
-            "required": ["sprint_id", "title"]
+            "required": ["sprint_id", "details"]
+        }
+    },
+    {
+        "name": "update_issue",
+        "description": """Update an existing issue.
+        
+Example:
+  Input: {"issue_id": 8, "status": "Resolved"}
+  Output: Updated details of issue #8 with the new status.
+  
+Only the issue_id is required; provide only the fields you want to update. This is useful for changing the status or severity of an issue.""",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "issue_id": {
+                    "type": "integer",
+                    "description": "ID of the issue to update"
+                },
+                "details": {
+                    "type": "string",
+                    "description": "New details of the issue"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "New status of the issue",
+                    "enum": ["Open", "In Progress", "Resolved"]
+                },
+                "severity": {
+                    "type": "string",
+                    "description": "New severity of the issue",
+                    "enum": ["Low", "Medium", "High", "Critical"]
+                },
+                "completed": {
+                    "type": "boolean",
+                    "description": "Whether the issue is completed/resolved"
+                }
+            },
+            "required": ["issue_id"]
         }
     }
 ]
