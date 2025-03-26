@@ -2,6 +2,8 @@
 
 Build Together is a project management tool for vibe coders. It's lightweight, self-hosted and built from the groundup for intuitive AI+Human collaboration. It features a dynamic web interface, a REST API, and full Model Context Protocol (MCP) support for use with AI coding assistants like Cursor, Claude Code, and Windsurf.
 
+<img src="documentation/images/btg-windsurf-min.jpg" alt="Windsurf Integration" width="800" />
+
 ## Features
 
 - Create and manage projects with requirements and implementation details
@@ -100,10 +102,6 @@ The application will be available at http://127.0.0.1:3149 by default.
 <img src="documentation/images/btg-edit-task-min.jpg" alt="Edit Task" width="800" />
 
 *Edit Task View: Update task details, status, and other properties.*
-
-<img src="documentation/images/btg-windsurf-min.jpg" alt="Windsurf Integration" width="800" />
-
-*Windsurf Integration: Use natural language to manage your projects through AI assistance.*
 
 ### Manual Setup
 
