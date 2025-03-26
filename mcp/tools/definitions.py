@@ -348,27 +348,21 @@ Only the task_id is required; provide only the fields you want to update. This i
     },
     {
         "name": "list_issues",
-        "description": """List all issues for a sprint.
+        "description": """List all issues or issues for a specific sprint.
         
 Example:
-  Input: {"sprint_id": 5} or {"sprint_id": 5, "status": "Open"}
-  Output: List of issues for sprint #5 with their IDs, titles, descriptions, and statuses.
+  Input: {} or {"sprint_id": 5}
+  Output: List of all issues or issues for sprint #5 with their IDs, details, and other information.
   
-The sprint_id is required; status is optional and can be omitted to list all issues.""",
+The sprint_id is optional. If provided, only issues for that sprint will be listed.""",
         "inputSchema": {
             "type": "object",
             "properties": {
                 "sprint_id": {
                     "type": "integer",
-                    "description": "ID of the sprint to list issues for"
-                },
-                "status": {
-                    "type": "string",
-                    "description": "Filter issues by status",
-                    "enum": ["Open", "In Progress", "Resolved", "All"]
+                    "description": "Optional ID of the sprint to list issues for"
                 }
-            },
-            "required": ["sprint_id"]
+            }
         }
     },
     {
