@@ -14,7 +14,7 @@ Build Together is a project management tool for vibe coders. It's lightweight, s
 - HTMX for dynamic content updates without page reloads
 - Markdown support for rich text formatting in all detail fields
 
-### Supports full set of LLM instructions outlined in [our `llms.txt` file](llms.txt)
+**Full set of LLM instructions outlined in [our `llms.txt` file](llms.txt)**
 
 
 ## Setup
@@ -260,13 +260,13 @@ Build Together includes full MCP (Model Context Protocol) support for seamless i
 ./run.sh
 ```
 
-2. In a separate terminal, start the MCP server:
+2. Add a new MCP server in Cursor, Windsurf, or Claude Code settings. Or alternatively, start the MCP server in a separate terminal:
 ```bash
 ./mcp/run_mcp.sh
 ```
 
-3. Configure Windsurf to use the MCP server:
-   - Open Windsurf settings
+3. Configure Cursor or Windsurf to use the MCP server:
+   - Open Cursor or Windsurf settings
    - Navigate to the MCP configuration section
    - Add a new MCP server with the path to your `mcp/run_mcp.sh` script
    - The full path will be shown at the end of the setup script for easy copying
@@ -391,21 +391,3 @@ flask db migrate -m "Description of changes"
 MIT License
 
 Copyright (c) 2025 Build Together
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.

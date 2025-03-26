@@ -107,35 +107,27 @@ The MCP server allows AI assistants to interact with Build Together using natura
 - `get_project` - Get detailed information about a specific project
 - `create_project` - Create a new project
 - `update_project` - Update an existing project
-- `delete_project` - Delete a project
 
 #### Sprint Management
 
-- `list_sprints` - List all sprints for a project
+- `list_sprints` - List all sprints or sprints for a specific project
 - `get_sprint` - Get detailed information about a specific sprint
 - `create_sprint` - Create a new sprint
 - `update_sprint` - Update an existing sprint
-- `delete_sprint` - Delete a sprint
 
 #### Task Management
 
 - `list_tasks` - List all tasks for a sprint
 - `get_task` - Get detailed information about a specific task
 - `create_task` - Create a new task
-- `update_task` - Update an existing task
-- `complete_task` - Mark a task as completed
-- `star_task` - Star or unstar a task
-- `delete_task` - Delete a task
+- `update_task` - Update an existing task (e.g., mark as completed)
 
 #### Issue Management
 
-- `list_issues` - List all issues for a sprint
+- `list_issues` - List all issues or issues for a specific sprint
 - `get_issue` - Get detailed information about a specific issue
 - `create_issue` - Create a new issue
-- `update_issue` - Update an existing issue
-- `resolve_issue` - Mark an issue as resolved
-- `star_issue` - Star or unstar an issue
-- `delete_issue` - Delete an issue
+- `update_issue` - Update an existing issue (e.g., mark as resolved)
 
 ### MCP Examples
 
@@ -164,8 +156,41 @@ The MCP server allows AI assistants to interact with Build Together using natura
   "parameters": {
     "name": "New Project",
     "description": "Project description",
-    "requirements": "Project requirements",
-    "implementation": "Implementation details"
+    "requirements": "Project requirements"
+  }
+}
+```
+
+#### Update a project
+```json
+{
+  "name": "update_project",
+  "parameters": {
+    "project_id": 1,
+    "name": "Updated Project Name",
+    "description": "Updated description",
+    "requirements": "Updated requirements",
+    "implementation_details": "Updated implementation details"
+  }
+}
+```
+
+#### List all sprints or sprints for a project
+```json
+{
+  "name": "list_sprints",
+  "parameters": {
+    "project_id": 1
+  }
+}
+```
+
+#### Get a specific sprint
+```json
+{
+  "name": "get_sprint",
+  "parameters": {
+    "sprint_id": 1
   }
 }
 ```
@@ -176,9 +201,42 @@ The MCP server allows AI assistants to interact with Build Together using natura
   "name": "create_sprint",
   "parameters": {
     "project_id": 1,
-    "title": "Sprint 1",
-    "status": "Planned",
-    "description": "First sprint"
+    "name": "Sprint 1",
+    "description": "First sprint",
+    "status": "Planned"
+  }
+}
+```
+
+#### Update a sprint
+```json
+{
+  "name": "update_sprint",
+  "parameters": {
+    "sprint_id": 1,
+    "name": "Updated Sprint Name",
+    "description": "Updated sprint description",
+    "status": "Active"
+  }
+}
+```
+
+#### List all tasks for a sprint
+```json
+{
+  "name": "list_tasks",
+  "parameters": {
+    "sprint_id": 1
+  }
+}
+```
+
+#### Get a specific task
+```json
+{
+  "name": "get_task",
+  "parameters": {
+    "task_id": 1
   }
 }
 ```
@@ -189,30 +247,73 @@ The MCP server allows AI assistants to interact with Build Together using natura
   "name": "create_task",
   "parameters": {
     "sprint_id": 1,
-    "title": "Implement feature X",
-    "description": "Detailed description of the task",
-    "completed": false,
-    "starred": false
+    "details": "Implement feature X",
+    "completed": false
   }
 }
 ```
 
-#### Star a task (mark as important)
+#### Update a task
 ```json
 {
-  "name": "star_task",
+  "name": "update_task",
   "parameters": {
     "task_id": 1,
-    "starred": true
+    "details": "Updated task description",
+    "completed": true
+  }
+}
+```
+
+#### List all issues or issues for a sprint
+```json
+{
+  "name": "list_issues",
+  "parameters": {
+    "sprint_id": 1
+  }
+}
+```
+
+#### Get a specific issue
+```json
+{
+  "name": "get_issue",
+  "parameters": {
+    "issue_id": 1
+  }
+}
+```
+
+#### Create a new issue in a sprint
+```json
+{
+  "name": "create_issue",
+  "parameters": {
+    "sprint_id": 1,
+    "details": "Bug: Feature X not working correctly",
+    "completed": false
+  }
+}
+```
+
+#### Update an issue
+```json
+{
+  "name": "update_issue",
+  "parameters": {
+    "issue_id": 1,
+    "details": "Updated issue description",
+    "completed": true
   }
 }
 ```
 
 ### Tips for AI Assistants
 
-1. **Working with Starred Tasks**: When a user asks you to "work on starred tasks," you should:
-   - List all starred tasks using `list_tasks` with a filter for starred items
-   - Focus on implementing or providing solutions for these tasks first
+1. **Working with Tasks and Issues**: When a user asks you to "work on tasks or issues," you should:
+   - List all tasks or issues using `list_tasks` or `list_issues` with the appropriate sprint_id
+   - Focus on implementing or providing solutions for these tasks or issues
 
 2. **Project Context**: Always maintain context about the current project structure:
    - Which project is the user working on?
@@ -223,18 +324,19 @@ The MCP server allows AI assistants to interact with Build Together using natura
    - "Show me all projects" → `list_projects`
    - "Create a new sprint" → `create_sprint`
    - "Mark this task as complete" → `update_task` with completed=true
-   - "Star this issue" → `star_issue` with starred=true
+   - "Mark this issue as resolved" → `update_issue` with completed=true
 
 4. **Error Handling**: If an MCP command fails:
    - Check if the referenced ID exists
    - Verify all required parameters are provided
    - Ensure parameter values are valid (e.g., sprint status must be one of: "Planned", "Active", "Completed")
+   - Make sure you're using the correct parameter names (e.g., "details" for task and issue content, not "title" or "description")
 
 5. **Workflow Suggestions**: Recommend efficient workflows to users:
-   - Create projects with clear requirements and implementation sections
+   - Create projects with clear requirements
    - Organize work into sprints with specific goals
    - Use tasks for planned work and issues for problems that arise
-   - Star important items that need immediate attention
+   - Update tasks and issues as work progresses
 
 ## Executing MCP Commands
 
