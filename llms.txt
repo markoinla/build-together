@@ -1,0 +1,50 @@
+# Build Together
+
+> Build Together is a lightweight, self-hosted project management tool built for AI+Human collaboration. It features a web interface, a RESTful API, and full Model Context Protocol (MCP) support for integration with AI coding assistants like Cursor, Claude Code, and Windsurf.
+
+Build Together allows you to create and manage projects, organize work into sprints, track tasks and issues, and collaborate with AI assistants through natural language. The application is designed to be simple to set up and use, with a focus on providing a smooth experience for both human users and AI assistants.
+
+Key features:
+- Create and manage projects with requirements and implementation details
+- Organize work into sprints with different statuses (Planned, Active, Completed)
+- Track tasks and issues with completion status
+- Star important tasks and issues for quick identification (tell the AI assistant to work on all starred tasks)
+- RESTful API for all operations
+- MCP server for AI assistant integration
+- Responsive UI with Tailwind & DaisyUI styling
+- HTMX for dynamic content updates without page reloads
+- Markdown support for rich text formatting in all detail fields
+
+The application runs by default on http://127.0.0.1:3149 and requires no authentication for local development.
+
+## API Documentation
+
+- [Projects API](/app/api/projects.py): API endpoints for project management (GET, POST, PUT, DELETE)
+- [Sprints API](/app/api/sprints.py): API endpoints for sprint management (GET, POST, PUT, DELETE)
+- [Tasks API](/app/api/tasks.py): API endpoints for task management (GET, POST, PUT, DELETE, star/unstar)
+- [Issues API](/app/api/issues.py): API endpoints for issue management (GET, POST, PUT, DELETE, star/unstar)
+
+## MCP Tools
+
+- [Project Tools](/mcp/tools/project_tools.py): MCP tools for project management (list_projects, get_project, create_project, update_project, delete_project)
+- [Sprint Tools](/mcp/tools/sprint_tools.py): MCP tools for sprint management (list_sprints, get_sprint, create_sprint, update_sprint, delete_sprint)
+- [Task Tools](/mcp/tools/task_tools.py): MCP tools for task management (list_tasks, get_task, create_task, update_task, complete_task, star_task, delete_task)
+- [Issue Tools](/mcp/tools/issue_tools.py): MCP tools for issue management (list_issues, get_issue, create_issue, update_issue, resolve_issue, star_issue, delete_issue)
+
+## Usage Examples
+
+- [API Examples](/documentation/api_examples.md): Examples of using the RESTful API with curl commands
+- [MCP Examples](/documentation/mcp_examples.md): Examples of using the MCP server with JSON payloads
+- [Workflow Examples](/documentation/workflow_examples.md): Common workflow patterns for project management
+
+## Best Practices
+
+- [Working with Starred Tasks](/documentation/best_practices.md#starred-tasks): How to handle starred tasks and issues
+- [Project Context](/documentation/best_practices.md#project-context): Maintaining context about project structure
+- [Error Handling](/documentation/best_practices.md#error-handling): Handling common errors and edge cases
+
+## Optional
+
+- [Known Limitations](/documentation/known_issues.md): Current limitations and known issues
+- [Configuration](/config.py): Application configuration settings
+- [Database Schema](/app/models/README.md): Database schema and model relationships

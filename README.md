@@ -14,27 +14,6 @@ Build Together is a project management tool for vibe coders. It's lightweight, s
 - HTMX for dynamic content updates without page reloads
 - Markdown support for rich text formatting in all detail fields
 
-## Screenshots
-
-<img src="documentation/images/btg-project-details-min.jpg" alt="Project Details" width="800" />
-
-*Project Details View: Manage project information, sprints, tasks, and issues in one place.*
-
-<img src="documentation/images/btg-sprint-details-min.jpg" alt="Sprint Details" width="800" />
-
-*Sprint Details View: Track tasks and issues within each sprint with clear status indicators.*
-
-<img src="documentation/images/btg-create-sprint-min.jpg" alt="Create Sprint" width="800" />
-
-*Create Sprint View: Easily create new sprints with title, status, and description.*
-
-<img src="documentation/images/btg-edit-task-min.jpg" alt="Edit Task" width="800" />
-
-*Edit Task View: Update task details, status, and other properties.*
-
-<img src="documentation/images/btg-windsurf-min.jpg" alt="Windsurf Integration" width="800" />
-
-*Windsurf Integration: Use natural language to manage your projects through AI assistance.*
 
 ## Setup
 
@@ -101,6 +80,28 @@ The application will be available at http://127.0.0.1:3149 by default.
    Make sure to replace `/path/to/your/project` with the actual path to your Build Together project.
 3. Restart Windsurf to apply the configuration
 4. You can now use natural language to manage your projects through Windsurf
+
+## Screenshots
+
+<img src="documentation/images/btg-project-details-min.jpg" alt="Project Details" width="800" />
+
+*Project Details View: Manage project information, sprints, tasks, and issues in one place.*
+
+<img src="documentation/images/btg-sprint-details-min.jpg" alt="Sprint Details" width="800" />
+
+*Sprint Details View: Track tasks and issues within each sprint with clear status indicators.*
+
+<img src="documentation/images/btg-create-sprint-min.jpg" alt="Create Sprint" width="800" />
+
+*Create Sprint View: Easily create new sprints with title, status, and description.*
+
+<img src="documentation/images/btg-edit-task-min.jpg" alt="Edit Task" width="800" />
+
+*Edit Task View: Update task details, status, and other properties.*
+
+<img src="documentation/images/btg-windsurf-min.jpg" alt="Windsurf Integration" width="800" />
+
+*Windsurf Integration: Use natural language to manage your projects through AI assistance.*
 
 ### Manual Setup
 
