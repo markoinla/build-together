@@ -1,5 +1,3 @@
-# Build Together
-
 > Build Together is a lightweight, self-hosted project management tool built for AI+Human collaboration. It features a web interface, a RESTful API, and full Model Context Protocol (MCP) support for integration with AI coding assistants like Cursor, Claude Code, and Windsurf.
 
 Build Together allows you to create and manage projects, organize work into sprints, track tasks and issues, and collaborate with AI assistants through natural language. The application is designed to be simple to set up and use, with a focus on providing a smooth experience for both human users and AI assistants.
@@ -8,43 +6,261 @@ Key features:
 - Create and manage projects with requirements and implementation details
 - Organize work into sprints with different statuses (Planned, Active, Completed)
 - Track tasks and issues with completion status
-- Star important tasks and issues for quick identification (tell the AI assistant to work on all starred tasks)
+- Star important tasks and issues for quick identification
 - RESTful API for all operations
 - MCP server for AI assistant integration
-- Responsive UI with Tailwind & DaisyUI styling
-- HTMX for dynamic content updates without page reloads
-- Markdown support for rich text formatting in all detail fields
 
-The application runs by default on http://127.0.0.1:3149 and requires no authentication for local development.
+## API Usage
 
-## API Documentation
+The Build Together API is available at `http://127.0.0.1:3149/api` when the application is running locally.
 
-- [Projects API](/app/api/projects.py): API endpoints for project management (GET, POST, PUT, DELETE)
-- [Sprints API](/app/api/sprints.py): API endpoints for sprint management (GET, POST, PUT, DELETE)
-- [Tasks API](/app/api/tasks.py): API endpoints for task management (GET, POST, PUT, DELETE, star/unstar)
-- [Issues API](/app/api/issues.py): API endpoints for issue management (GET, POST, PUT, DELETE, star/unstar)
+### Authentication
 
-## MCP Tools
+No authentication is required for local development.
 
-- [Project Tools](/mcp/tools/project_tools.py): MCP tools for project management (list_projects, get_project, create_project, update_project, delete_project)
-- [Sprint Tools](/mcp/tools/sprint_tools.py): MCP tools for sprint management (list_sprints, get_sprint, create_sprint, update_sprint, delete_sprint)
-- [Task Tools](/mcp/tools/task_tools.py): MCP tools for task management (list_tasks, get_task, create_task, update_task, complete_task, star_task, delete_task)
-- [Issue Tools](/mcp/tools/issue_tools.py): MCP tools for issue management (list_issues, get_issue, create_issue, update_issue, resolve_issue, star_issue, delete_issue)
+### API Endpoints
 
-## Usage Examples
+#### Projects
 
-- [API Examples](/documentation/api_examples.md): Examples of using the RESTful API with curl commands
-- [MCP Examples](/documentation/mcp_examples.md): Examples of using the MCP server with JSON payloads
-- [Workflow Examples](/documentation/workflow_examples.md): Common workflow patterns for project management
+- `GET /api/projects` - List all projects
+- `GET /api/projects/{id}` - Get project by ID
+- `POST /api/projects` - Create a new project
+- `PUT /api/projects/{id}` - Update a project
+- `DELETE /api/projects/{id}` - Delete a project
+
+#### Sprints
+
+- `GET /api/sprints` - List all sprints
+- `GET /api/sprints/{id}` - Get sprint by ID
+- `POST /api/sprints` - Create a new sprint
+- `PUT /api/sprints/{id}` - Update a sprint
+- `DELETE /api/sprints/{id}` - Delete a sprint
+
+#### Tasks
+
+- `GET /api/tasks` - List all tasks
+- `GET /api/tasks/{id}` - Get task by ID
+- `POST /api/tasks` - Create a new task
+- `PUT /api/tasks/{id}` - Update a task
+- `DELETE /api/tasks/{id}` - Delete a task
+- `PUT /api/tasks/{id}/star` - Star/unstar a task
+
+#### Issues
+
+- `GET /api/issues` - List all issues
+- `GET /api/issues/{id}` - Get issue by ID
+- `POST /api/issues` - Create a new issue
+- `PUT /api/issues/{id}` - Update an issue
+- `DELETE /api/issues/{id}` - Delete an issue
+- `PUT /api/issues/{id}/star` - Star/unstar an issue
+
+### API Examples
+
+#### List all projects
+```bash
+curl -X GET http://127.0.0.1:3149/api/projects
+```
+
+#### Get a specific project
+```bash
+curl -X GET http://127.0.0.1:3149/api/projects/1
+```
+
+#### Create a new project
+```bash
+curl -X POST http://127.0.0.1:3149/api/projects \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Project",
+    "description": "Project description",
+    "requirements": "Project requirements",
+    "implementation": "Implementation details"
+  }'
+```
+
+#### Update a project
+```bash
+curl -X PUT http://127.0.0.1:3149/api/projects/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Project",
+    "description": "Updated description",
+    "requirements": "Updated requirements",
+    "implementation": "Updated implementation details"
+  }'
+```
+
+#### Delete a project
+```bash
+curl -X DELETE http://127.0.0.1:3149/api/projects/1
+```
+
+## MCP Server Usage
+
+The MCP server allows AI assistants to interact with Build Together using natural language commands.
+
+### Available MCP Tools
+
+#### Project Management
+
+- `list_projects` - List all projects
+- `get_project` - Get detailed information about a specific project
+- `create_project` - Create a new project
+- `update_project` - Update an existing project
+- `delete_project` - Delete a project
+
+#### Sprint Management
+
+- `list_sprints` - List all sprints for a project
+- `get_sprint` - Get detailed information about a specific sprint
+- `create_sprint` - Create a new sprint
+- `update_sprint` - Update an existing sprint
+- `delete_sprint` - Delete a sprint
+
+#### Task Management
+
+- `list_tasks` - List all tasks for a sprint
+- `get_task` - Get detailed information about a specific task
+- `create_task` - Create a new task
+- `update_task` - Update an existing task
+- `complete_task` - Mark a task as completed
+- `star_task` - Star or unstar a task
+- `delete_task` - Delete a task
+
+#### Issue Management
+
+- `list_issues` - List all issues for a sprint
+- `get_issue` - Get detailed information about a specific issue
+- `create_issue` - Create a new issue
+- `update_issue` - Update an existing issue
+- `resolve_issue` - Mark an issue as resolved
+- `star_issue` - Star or unstar an issue
+- `delete_issue` - Delete an issue
+
+### MCP Examples
+
+#### List all projects
+```json
+{
+  "name": "list_projects",
+  "parameters": {}
+}
+```
+
+#### Get a specific project
+```json
+{
+  "name": "get_project",
+  "parameters": {
+    "project_id": 1
+  }
+}
+```
+
+#### Create a new project
+```json
+{
+  "name": "create_project",
+  "parameters": {
+    "name": "New Project",
+    "description": "Project description",
+    "requirements": "Project requirements",
+    "implementation": "Implementation details"
+  }
+}
+```
+
+#### Create a new sprint for a project
+```json
+{
+  "name": "create_sprint",
+  "parameters": {
+    "project_id": 1,
+    "title": "Sprint 1",
+    "status": "Planned",
+    "description": "First sprint"
+  }
+}
+```
+
+#### Create a new task in a sprint
+```json
+{
+  "name": "create_task",
+  "parameters": {
+    "sprint_id": 1,
+    "title": "Implement feature X",
+    "description": "Detailed description of the task",
+    "completed": false,
+    "starred": false
+  }
+}
+```
+
+#### Star a task (mark as important)
+```json
+{
+  "name": "star_task",
+  "parameters": {
+    "task_id": 1,
+    "starred": true
+  }
+}
+```
+
+### Tips for AI Assistants
+
+1. **Working with Starred Tasks**: When a user asks you to "work on starred tasks," you should:
+   - List all starred tasks using `list_tasks` with a filter for starred items
+   - Focus on implementing or providing solutions for these tasks first
+
+2. **Project Context**: Always maintain context about the current project structure:
+   - Which project is the user working on?
+   - What sprints exist in this project?
+   - What tasks and issues are in the current sprint?
+
+3. **Natural Language Processing**: Common user requests and their MCP tool mappings:
+   - "Show me all projects" → `list_projects`
+   - "Create a new sprint" → `create_sprint`
+   - "Mark this task as complete" → `update_task` with completed=true
+   - "Star this issue" → `star_issue` with starred=true
+
+4. **Error Handling**: If an MCP command fails:
+   - Check if the referenced ID exists
+   - Verify all required parameters are provided
+   - Ensure parameter values are valid (e.g., sprint status must be one of: "Planned", "Active", "Completed")
+
+5. **Workflow Suggestions**: Recommend efficient workflows to users:
+   - Create projects with clear requirements and implementation sections
+   - Organize work into sprints with specific goals
+   - Use tasks for planned work and issues for problems that arise
+   - Star important items that need immediate attention
+
+## Executing MCP Commands
+
+To execute an MCP command, send a POST request to the MCP server endpoint:
+
+```bash
+curl -X POST http://127.0.0.1:3149/mcp/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "list_projects",
+    "parameters": {}
+  }' | python -m json.tool
+```
+
+For AI assistants with direct MCP integration (like Windsurf or Cursor), you can use the natural language interface to issue commands, and the assistant will handle the MCP protocol details.
+
+## Known Limitations
+
+1. AI assistants may sometimes have trouble executing MCP commands or the MCP server might require multiple tool calls
+2. Copy task/issue ID functionality doesn't work within Windsurf Browser Preview
+3. Various UX/UI improvements are planned for future releases
 
 ## Best Practices
 
-- [Working with Starred Tasks](/documentation/best_practices.md#starred-tasks): How to handle starred tasks and issues
-- [Project Context](/documentation/best_practices.md#project-context): Maintaining context about project structure
-- [Error Handling](/documentation/best_practices.md#error-handling): Handling common errors and edge cases
-
-## Optional
-
-- [Known Limitations](/documentation/known_issues.md): Current limitations and known issues
-- [Configuration](/config.py): Application configuration settings
-- [Database Schema](/app/models/README.md): Database schema and model relationships
+1. Always verify the success of operations by checking the response
+2. Maintain context about the project structure to avoid unnecessary API calls
+3. Use descriptive titles and detailed descriptions for all items
+4. Leverage Markdown formatting in description fields for better readability
+5. Star important tasks and issues to make them stand out
