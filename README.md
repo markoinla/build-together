@@ -14,6 +14,8 @@ Build Together is a project management tool for vibe coders. It's lightweight, s
 - HTMX for dynamic content updates without page reloads
 - Markdown support for rich text formatting in all detail fields
 
+### Supports full set of LLM instructions outlined in [our `llms.txt` file](llms.txt)
+
 
 ## Setup
 
