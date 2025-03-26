@@ -135,3 +135,21 @@
     </div>
 </div>
 {% endblock %}
+
+{% block scripts %}
+<script>
+  // Ensure Alpine.js components are properly initialized when the page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    // Force Alpine.js to re-evaluate components
+    if (window.Alpine) {
+      setTimeout(function() {
+        document.querySelectorAll('[x-data]').forEach(el => {
+          if (window.Alpine.initializeComponent) {
+            window.Alpine.initializeComponent(el);
+          }
+        });
+      }, 100);
+    }
+  });
+</script>
+{% endblock %}

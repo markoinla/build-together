@@ -3,7 +3,7 @@
 # Set environment variables
 export PYTHONUNBUFFERED=1
 export PYTHONIOENCODING=utf-8
-export BTG_BASE_URL="http://127.0.0.1:5001"
+export BTG_BASE_URL="http://127.0.0.1:3149"
 
 # Get the directory of this script
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

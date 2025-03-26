@@ -375,6 +375,160 @@ function initAlpineAfterHtmxSwap() {
     }
 }
 
+/**
+ * Open a delete confirmation modal
+ * @param {string} modalId - The ID of the modal to open
+ * @param {string} title - The title for the modal
+ * @param {string} message - The confirmation message to display
+ * @param {Function} onConfirm - The function to call when delete is confirmed
+ */
+function openDeleteConfirmationModal(modalId, title, message, onConfirm) {
+    console.log('Opening modal:', modalId, title);
+    
+    // Set the confirmation message first
+    const contentElement = document.getElementById(`${modalId}-content`);
+    if (contentElement) {
+        console.log('Found content element:', contentElement);
+        
+        // Create the modal content
+        contentElement.innerHTML = `
+            <p class="mb-4">${message}</p>
+            <div class="modal-action">
+                <button class="btn btn-ghost" @click="open = false">Cancel</button>
+                <button class="btn btn-error" id="${modalId}-confirm-btn">Delete</button>
+            </div>
+        `;
+        
+        // Add event listener to the confirm button
+        const confirmBtn = document.getElementById(`${modalId}-confirm-btn`);
+        if (confirmBtn) {
+            console.log('Found confirm button:', confirmBtn);
+            
+            // Remove any existing event listeners
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+            
+            // Add the new event listener
+            newConfirmBtn.addEventListener('click', function() {
+                console.log('Confirm button clicked');
+                
+                // Close the modal
+                document.dispatchEvent(new CustomEvent('close-modal', {
+                    detail: {
+                        id: modalId
+                    }
+                }));
+                
+                // Call the onConfirm function
+                if (typeof onConfirm === 'function') {
+                    onConfirm();
+                }
+            });
+        } else {
+            console.error('Confirm button not found!');
+        }
+    } else {
+        console.error('Content element not found!', `#${modalId}-content`);
+    }
+    
+    // Now dispatch the open-modal event that Alpine.js listens for
+    console.log('Dispatching open-modal event');
+    document.dispatchEvent(new CustomEvent('open-modal', {
+        detail: {
+            id: modalId,
+            title: title
+        }
+    }));
+}
+
+/**
+ * Handle delete action with confirmation modal instead of browser alert
+ * @param {Element} element - The element that triggered the delete action
+ * @param {string} url - The URL to send the delete request to
+ * @param {string} message - The confirmation message to display
+ * @param {string} itemType - The type of item being deleted (project, sprint, task, issue)
+ */
+function handleDelete(element, url, message, itemType) {
+    openDeleteConfirmationModal(
+        'delete-confirmation-modal',
+        `Confirm Delete ${itemType}`,
+        message,
+        function() {
+            // Send the DELETE request using HTMX
+            htmx.ajax('DELETE', url, {
+                target: '#appMainContainer',
+                swap: 'innerHTML'
+            });
+        }
+    );
+}
+
+/**
+ * Initialize delete button event listeners
+ * This replaces the hx-confirm functionality with modal dialogs
+ */
+function initializeDeleteEventListeners() {
+    // Project delete buttons
+    document.querySelectorAll('[data-delete-project]').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const projectId = this.dataset.projectId;
+            const url = this.dataset.deleteUrl;
+            const message = "Are you sure you want to delete this project? This will also delete all sprints, tasks, and issues associated with this project.";
+            
+            console.log('Project delete clicked:', projectId, url);
+            handleDelete(this, url, message, 'Project');
+        });
+    });
+    
+    // Sprint delete buttons
+    document.querySelectorAll('[data-delete-sprint]').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const sprintId = this.dataset.sprintId;
+            const url = this.dataset.deleteUrl;
+            const message = "Are you sure you want to delete this sprint? This will also delete all tasks and issues in this sprint.";
+            
+            console.log('Sprint delete clicked:', sprintId, url);
+            handleDelete(this, url, message, 'Sprint');
+        });
+    });
+    
+    // Task delete buttons
+    document.querySelectorAll('[data-delete-task]').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const taskId = this.dataset.taskId;
+            const url = this.dataset.deleteUrl;
+            const message = "Are you sure you want to delete this task?";
+            
+            console.log('Task delete clicked:', taskId, url);
+            handleDelete(this, url, message, 'Task');
+        });
+    });
+    
+    // Issue delete buttons
+    document.querySelectorAll('[data-delete-issue]').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const issueId = this.dataset.issueId;
+            const url = this.dataset.deleteUrl;
+            const message = "Are you sure you want to delete this issue?";
+            
+            console.log('Issue delete clicked:', issueId, url);
+            handleDelete(this, url, message, 'Issue');
+        });
+    });
+}
+
 // Initialize everything when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize task event listeners
@@ -382,6 +536,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize issue event listeners
     initializeIssueEventListeners();
+    
+    // Initialize delete event listeners
+    initializeDeleteEventListeners();
     
     // Initialize keyboard shortcuts
     initializeKeyboardShortcuts();
@@ -391,6 +548,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize Alpine.js components
     initAlpineAfterHtmxSwap();
+    
+    // Log initialization for debugging
+    console.log('Delete event listeners initialized');
 });
 
 // Initialize Alpine.js components and auto-expand textareas after HTMX content swaps
@@ -399,5 +559,7 @@ document.body.addEventListener('htmx:afterSwap', function() {
     setTimeout(function() {
         initAlpineAfterHtmxSwap();
         initAutoExpandTextareas();
+        initializeDeleteEventListeners(); // Re-initialize delete listeners after content swap
+        console.log('Delete event listeners re-initialized after HTMX swap');
     }, 10);
 });

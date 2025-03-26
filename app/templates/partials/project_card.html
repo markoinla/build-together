@@ -1,4 +1,4 @@
-<div class="card shadow-sm mb-4 project-card card-border border-neutral">
+<div class="card shadow-sm mb-4 project-card card-border border-neutral" x-data="{ projectCardOpen: true }">
     <div class="card-body">
         <!-- Card Header -->
         <div class="flex justify-between items-start">
@@ -7,16 +7,58 @@
                     {{ project.name }}
                 </a>
             </h3>
-            <!-- Delete button -->
-            <button class="btn btn-ghost btn-sm btn-circle text-error" 
-                    hx-confirm="Are you sure you want to delete this project? This will also delete all sprints, tasks, and issues associated with this project."
-                    hx-delete="/htmx/projects/{{ project.id }}/delete" 
-                    hx-target="body"
-                    hx-swap="none">
+            <!-- Delete button 
+            <div class="btn btn-ghost btn-sm btn-circle text-error" 
+                 @click.stop="
+                  // Directly find and manipulate the modal element
+                  const modal = document.querySelector('#delete-confirmation-modal .modal');
+                  if (modal) {
+                      modal.classList.add('modal-open');
+                  }
+                  
+                  // Set up the modal content
+                  const content = document.getElementById('delete-confirmation-modal-content');
+                  content.innerHTML = '';
+                  
+                  // Create confirmation message
+                  const message = document.createElement('p');
+                  message.className = 'mb-4';
+                  message.textContent = 'Are you sure you want to delete this project? This will also delete all sprints, tasks, and issues associated with this project.';
+                  content.appendChild(message);
+                  
+                  // Create action buttons container
+                  const actions = document.createElement('div');
+                  actions.className = 'modal-action';
+                  
+                  // Create cancel button
+                  const cancelBtn = document.createElement('button');
+                  cancelBtn.className = 'btn btn-ghost';
+                  cancelBtn.textContent = 'Cancel';
+                  cancelBtn.addEventListener('click', function() {
+                      // Directly close the modal
+                      modal.classList.remove('modal-open');
+                  });
+                  
+                  // Create delete button
+                  const deleteBtn = document.createElement('button');
+                  deleteBtn.className = 'btn btn-error';
+                  deleteBtn.textContent = 'Delete';
+                  deleteBtn.addEventListener('click', function() {
+                      // Close the modal
+                      modal.classList.remove('modal-open');
+                      
+                      // Send delete request
+                      htmx.ajax('DELETE', '/htmx/projects/{{ project.id }}/delete', {target: '#appMainContainer', swap: 'innerHTML'});
+                  });
+                  
+                  // Add buttons to container
+                  actions.appendChild(cancelBtn);
+                  actions.appendChild(deleteBtn);
+                  content.appendChild(actions);">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="1.2em" height="1.2em">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                 </svg>
-            </button>
+            </div>-->
         </div>
         
         <!-- Card Content -->

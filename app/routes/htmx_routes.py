@@ -217,20 +217,27 @@ def delete_task(task_id):
     """
     task = Task.query.get_or_404(task_id)
     
-    # Get the sprint and project for this task before deleting
-    sprint = Sprint.query.get(task.sprint_id)
+    # Get the sprint id for this task before deleting
+    sprint_id = task.sprint_id
+    
+    # Get the project id for the redirect URL
+    sprint = Sprint.query.get(sprint_id)
+    if not sprint:
+        # If sprint was deleted, redirect to dashboard
+        response = make_response('')
+        response.headers['HX-Redirect'] = url_for('main.index')
+        return response
+        
     project_id = sprint.project_id
     
     # Delete the task
     db.session.delete(task)
     db.session.commit()
     
-    # Get the project
-    project = Project.query.get(project_id)
-    
-    # Always return the specific project for task operations
-    # Task operations are always performed from the project detail page
-    return render_template('partials/sprint.html', sprint=sprint, project=project, is_sprint_detail=True)
+    # Use HX-Redirect to navigate to the sprint page
+    response = make_response('')
+    response.headers['HX-Redirect'] = url_for('main.sprint_detail', project_id=project_id, sprint_id=sprint_id)
+    return response
 
 @htmx_bp.route('/tasks/<int:task_id>/star', methods=['PUT'])
 def star_task(task_id):
@@ -323,20 +330,27 @@ def delete_issue(issue_id):
     """
     issue = Issue.query.get_or_404(issue_id)
     
-    # Get the sprint and project for this issue before deleting
-    sprint = Sprint.query.get(issue.sprint_id)
+    # Get the sprint id for this issue before deleting
+    sprint_id = issue.sprint_id
+    
+    # Get the project id for the redirect URL
+    sprint = Sprint.query.get(sprint_id)
+    if not sprint:
+        # If sprint was deleted, redirect to dashboard
+        response = make_response('')
+        response.headers['HX-Redirect'] = url_for('main.index')
+        return response
+        
     project_id = sprint.project_id
     
     # Delete the issue
     db.session.delete(issue)
     db.session.commit()
     
-    # Get the project
-    project = Project.query.get(project_id)
-    
-    # Always return the specific project for issue operations
-    # Issue operations are always performed from the project detail page
-    return render_template('partials/sprint.html', sprint=sprint, project=project, is_sprint_detail=True)
+    # Use HX-Redirect to navigate to the sprint page
+    response = make_response('')
+    response.headers['HX-Redirect'] = url_for('main.sprint_detail', project_id=project_id, sprint_id=sprint_id)
+    return response
 
 @htmx_bp.route('/issues/<int:issue_id>/star', methods=['PUT'])
 def star_issue(issue_id):
@@ -513,6 +527,7 @@ def delete_sprint(sprint_id):
         response = make_response('')
         response.headers['HX-Redirect'] = url_for('main.index')
         return response
+        
     elif is_sprint_detail_page:
         # If on sprint detail page, redirect to the project detail page
         response = make_response('')
@@ -619,7 +634,7 @@ def delete_project(project_id):
         project_id: ID of the project to delete
         
     Returns:
-        Redirect to the current page or to dashboard if on project detail page
+        Redirect to the index page
     """
     project = Project.query.get_or_404(project_id)
     
@@ -633,17 +648,8 @@ def delete_project(project_id):
     db.session.delete(project)
     db.session.commit()
     
-    # Get the current URL
-    request_url = request.headers.get('HX-Request-URL', '')
-    
-    # Create a response with a refresh header
+    # Create a response with a redirect header to the projects page
     response = make_response('')
-    
-    # If on project detail page, redirect to dashboard
-    if f'/project/{project_id}' in request_url:
-        response.headers['HX-Redirect'] = url_for('main.index')
-    else:
-        # For all other pages, refresh the current page
-        response.headers['HX-Refresh'] = 'true'
+    response.headers['HX-Redirect'] = url_for('main.index')
     
     return response

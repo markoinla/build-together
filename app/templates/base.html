@@ -97,7 +97,7 @@
             <div class="flex-1 flex items-center">
               <!-- Hamburger Menu Button -->
               <button onclick="toggleSidebar()" 
-                      class="btn btn-ghost mr-2" 
+                      class="btn btn-ghost btn-sm p-0 mr-2" 
                       id="sidebarToggleBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -144,12 +144,16 @@
         </div>
 
         <!-- Main Content -->
-        <main class="mx-auto w-full max-w-6xl px-4">
+        <main class="w-full max-w-6xl px-8">
             {% block content %}{% endblock %}
         </main>
         
         <!-- Modal containers -->
         {% with modal_id="sprint-form-modal", default_title="Create New Sprint" %}
+            {% include 'partials/modal.html' %}
+        {% endwith %}
+        
+        {% with modal_id="delete-confirmation-modal", default_title="Confirm Delete" %}
             {% include 'partials/modal.html' %}
         {% endwith %}
         

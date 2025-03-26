@@ -40,8 +40,8 @@
         <div class="flex justify-end gap-2">
             <button type="button" 
                     class="btn btn-sm btn-ghost" 
-                    data-form-id="project-edit-form-container-{{ project.id if project else '' }}"
-                    onclick="closeFormContainer(this.dataset.formId || 'project-form-container')">
+                    data-form-id="{% if project %}project-edit-form-container-{{ project.id }}{% else %}project-form-container{% endif %}"
+                    onclick="closeFormContainer(this.dataset.formId)">
                 Cancel
             </button>
             <button type="submit" class="btn btn-sm btn-primary">

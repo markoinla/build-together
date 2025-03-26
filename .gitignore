@@ -55,3 +55,9 @@ Thumbs.db
 # Debug logs
 debug.log
 *.log
+
+# SQLite database files
+*.db
+*.sqlite
+*.sqlite3
+instance/
