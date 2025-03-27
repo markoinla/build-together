@@ -21,6 +21,9 @@ wheels/
 .installed.cfg
 *.egg
 
+# Development
+#frontend/mockups/
+
 # Flask
 instance/
 .webassets-cache

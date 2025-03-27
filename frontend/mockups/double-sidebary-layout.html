@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html data-theme="dark" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Together PM</title>
+    <!-- Tailwind & DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Heroicons (for icons) -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/outline/index.js"></script>
+     <style>
+        [x-cloak] { display: none !important; }
+        .menu a, .menu button { transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; }
+        body {
+             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+        }
+        .task-details {
+            border-top: 1px solid theme('colors.base-300');
+            margin-top: 0.75rem; /* mt-3 */
+            padding-top: 0.75rem; /* pt-3 */
+        }
+    </style>
+</head>
+<body
+    class="bg-base-100 text-base-content font-sans"
+    x-data="pmApp()"
+    x-cloak
+    x-init="init"
+>
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Left Sidebar Container -->
+        <div class="flex flex-col transition-all duration-300 ease-in-out flex-shrink-0" :class="isLeftSidebarOpen ? 'w-64' : 'w-16'">
+             <aside class="flex-1 bg-base-200 text-base-content flex flex-col border-r border-base-300 overflow-y-auto overflow-x-hidden">
+                <!-- Header & Toggle -->
+                 <div class="h-16 flex items-center justify-between px-4 border-b border-base-300 flex-shrink-0">
+                     <span x-show="isLeftSidebarOpen" class="text-xl font-bold">Build Together</span>
+                     <button @click="toggleLeftSidebar" class="btn btn-ghost btn-sm btn-square">
+                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /></svg>
+                     </button>
+                 </div>
+                 <!-- Navigation Content -->
+                <nav class="flex-1 p-4 space-y-4" :class="{ 'opacity-0 invisible': !isLeftSidebarOpen, 'opacity-100 visible': isLeftSidebarOpen }">
+                    <div>
+                        <h3 class="text-xs uppercase text-base-content/50 font-semibold mb-2 px-3">Projects</h3>
+                        <ul class="menu menu-sm bg-base-200 w-full p-0 [&_li>*]:rounded-md">
+                            <template x-for="project in projects" :key="project.id">
+                                <li>
+                                    <details :open="selectedProjectId === project.id" class="group">
+                                         <summary @click.prevent="selectProject(project.id)" class="flex items-center justify-between" :class="{ 'bg-base-300 font-semibold': selectedProjectId === project.id }"><span class="flex items-center gap-2 truncate"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4"><path d="M2.75 2.5a.25.25 0 0 0-.25.25v10.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V2.75a.25.25 0 0 0-.25-.25H2.75Z"></path></svg><span x-text="project.name"></span></span></summary>
+                                        <!-- Sprints -->
+                                        <ul class="pl-4 mt-1 space-y-1 pt-1">
+                                            <template x-for="sprint in project.sprints" :key="sprint.id"><li><a href="#" @click.prevent="selectSprint(sprint.id)" :class="{ 'bg-primary text-primary-content font-semibold': selectedSprintId === sprint.id, 'hover:bg-base-300': selectedSprintId !== sprint.id }"><span x-text="sprint.name"></span></a></li></template>
+                                            <li><button @click="openAddModal('sprint', project.id)" class="btn btn-xs btn-ghost w-full justify-start mt-1 text-base-content/70 hover:text-base-content">+ Add Sprint</button></li>
+                                        </ul>
+                                    </details>
+                                </li>
+                            </template>
+                        </ul>
+                         <button @click="openAddModal('project')" class="btn btn-sm btn-primary w-full mt-4">+ New Project</button>
+                    </div>
+                </nav>
+                <!-- Collapsed Sidebar Icons -->
+                 <div class="flex-1 flex flex-col items-center py-4 space-y-3" :class="{ 'hidden': isLeftSidebarOpen }">
+                     <template x-for="project in projects" :key="project.id"><button @click="selectProject(project.id); isLeftSidebarOpen = true;" class="btn btn-ghost btn-sm btn-square tooltip tooltip-right" :data-tip="project.name"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-5 h-5"><path d="M2.75 2.5a.25.25 0 0 0-.25.25v10.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V2.75a.25.25 0 0 0-.25-.25H2.75Z"></path></svg></button></template>
+                      <button @click="openAddModal('project'); isLeftSidebarOpen = true;" class="btn btn-ghost btn-sm btn-square text-primary tooltip tooltip-right" data-tip="New Project"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg></button>
+                 </div>
+                <!-- User Info -->
+                <div class="p-4 border-t border-base-300 text-sm flex items-center justify-between flex-shrink-0">
+                     <div x-show="isLeftSidebarOpen" class="flex items-center gap-2"><div class="avatar placeholder"><div class="bg-neutral-focus text-neutral-content rounded-full w-6"><span class="text-xs">ZC</span></div></div><span>ZenCoder</span></div><button x-show="isLeftSidebarOpen" class="btn btn-xs btn-ghost">Logout</button><button x-show="!isLeftSidebarOpen" class="btn btn-ghost btn-sm btn-square tooltip tooltip-right" data-tip="User ZenCoder"><div class="avatar placeholder"><div class="bg-neutral-focus text-neutral-content rounded-full w-6"><span class="text-xs">ZC</span></div></div></button>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 bg-base-100 overflow-y-auto transition-all duration-300 ease-in-out min-w-0">
+             <div class="p-6">
+                 <!-- Header Bar -->
+                 <div class="flex justify-between items-center mb-6">
+                     <!-- Left side: Title & Context -->
+                     <div><template x-if="selectedSprint"><div><h1 class="text-2xl font-semibold mb-1" x-text="selectedSprint.name"></h1><p class="text-sm text-base-content/70 mb-1" x-text="`Project: ${selectedProject?.name}`"></p><p class="text-sm italic text-base-content/80" x-text="selectedSprint.goal || 'No goal set.'"></p></div></template><template x-if="!selectedSprint && selectedProject"><div><h1 class="text-2xl font-semibold mb-1" x-text="selectedProject.name"></h1><p class="text-sm text-base-content/70 mb-1">Project Overview</p></div></template><template x-if="!selectedProject"><h1 class="text-2xl font-semibold">Welcome to Build Together</h1></template></div>
+                     <!-- Right side: Actions -->
+                     <div class="flex items-center gap-2">
+                        <template x-if="selectedSprint">
+                            <!-- Column Visibility Dropdown -->
+                             <div class="dropdown dropdown-end">
+                                <button tabindex="0" class="btn btn-sm btn-ghost">
+                                    View
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                                </button>
+                                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-300 rounded-box w-40">
+                                     <li class="menu-title text-xs">Show Columns</li>
+                                     <template x-for="status in taskStatuses" :key="status.id">
+                                        <li>
+                                            <label class="label cursor-pointer justify-start gap-2">
+                                              <input type="checkbox" class="checkbox checkbox-xs checkbox-primary" x-model="columnVisibility[status.id]" />
+                                              <span class="label-text text-xs" x-text="status.name"></span>
+                                            </label>
+                                        </li>
+                                     </template>
+                                </ul>
+                            </div>
+                            <!-- Edit Sprint Button -->
+                            <button @click="openEditModal(selectedSprint, 'sprint')" class="btn btn-sm btn-outline btn-secondary">Edit Sprint</button>
+                        </template>
+                        <template x-if="selectedProject && !selectedSprint">
+                            <button @click="openEditModal(selectedProject, 'project')" class="btn btn-sm btn-outline btn-secondary">Edit Project</button>
+                        </template>
+                     </div>
+                 </div>
+
+                 <!-- REMOVED: Column Visibility Toggles Row -->
+
+                <!-- Task/Issue Board -->
+                <template x-if="selectedSprintId">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4"> <!-- Adjust grid-cols based on needs/responsive behavior -->
+                        <!-- Columns -->
+                        <template x-for="status in taskStatuses" :key="status.id">
+                            <!-- Conditionally render column -->
+                            <template x-if="columnVisibility[status.id]">
+                                <div class="bg-base-200/50 p-4 rounded-lg border border-base-300 flex flex-col">
+                                    <!-- Column Header with Hide Button -->
+                                    <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                                        <h2 class="font-semibold text-center text-sm uppercase tracking-wider flex-grow"
+                                            x-text="`${status.name} (${tasksByStatus[status.id]?.length || 0})`"></h2>
+                                        <button @click="hideColumn(status.id)" class="btn btn-ghost btn-xs btn-square text-base-content/50 hover:text-error" title="Hide Column">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                              <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L6.228 6.228" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <!-- Task Cards Area -->
+                                    <div class="space-y-3 min-h-[100px] flex-1">
+                                        <template x-for="task in tasksByStatus[status.id]" :key="task.id">
+                                            <div
+                                                @click="toggleTaskExpansion(task.id)"
+                                                class="card bg-base-100 shadow hover:shadow-md cursor-pointer"
+                                                :class="{'ring-2 ring-primary': selectedItemId === task.id}">
+                                                <div class="card-body p-3">
+                                                    <!-- Basic Card Info -->
+                                                    <div class="flex justify-between items-start">
+                                                        <h3 class="card-title text-sm font-medium" x-text="task.title"></h3>
+                                                        <div class="dropdown dropdown-end">
+                                                             <button tabindex="0" class="btn btn-ghost btn-xs btn-square">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" /></svg>
+                                                            </button>
+                                                            <ul tabindex="0" class="dropdown-content z-[1] menu p-1 shadow bg-base-300 rounded-box w-32 text-xs">
+                                                                <li><a @click.prevent.stop="openEditModal(task, 'task')">Edit</a></li>
+                                                                <template x-for="s in taskStatuses" :key="s.id"><li x-show="task.status !== s.id"><a @click.prevent.stop="moveTask(task.id, s.id)" x-text="`Move to ${s.name}`"></a></li></template>
+                                                                <li><a @click.prevent.stop="deleteItem(task.id, 'task')" class="text-error">Delete</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <p class="text-xs text-base-content/60" x-text="`#TASK-${task.id}`"></p>
+                                                    <div class="card-actions justify-between items-center mt-2">
+                                                        <div>
+                                                            <span x-show="task.priority" class="badge badge-xs mr-1" :class="{ 'badge-error': task.priority === 'High', 'badge-warning': task.priority === 'Medium', 'badge-info': task.priority === 'Low' }" x-text="task.priority"></span>
+                                                            <span x-show="task.type === 'Bug'" class="badge badge-secondary badge-xs">Bug</span>
+                                                        </div>
+                                                        <div x-show="task.assignee" class="avatar placeholder">
+                                                           <div class="bg-neutral-focus text-neutral-content rounded-full w-5"><span class="text-xs" x-text="task.assignee"></span></div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Expanded Details Section -->
+                                                    <div x-show="expandedTaskIds.includes(task.id)" x-transition class="task-details text-sm space-y-1">
+                                                         <p x-show="task.description" class="text-base-content/90 whitespace-pre-wrap" x-text="task.description"></p>
+                                                         <p x-show="!task.description" class="text-base-content/50 italic">No description.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                     <!-- Add Task Button -->
+                                     <button @click="openAddModal('task', selectedSprintId, status.id)" class="btn btn-xs btn-ghost w-full mt-3 text-base-content/70 hover:text-base-content flex-shrink-0">
+                                        + Add Task
+                                    </button>
+                                </div>
+                             </template>
+                        </template>
+                         <!-- Message if all columns are hidden -->
+                         <template x-if="!columnVisibility.todo && !columnVisibility.inprogress && !columnVisibility.done">
+                             <div class="md:col-span-3 text-center text-base-content/50 italic p-10">
+                                 All columns are hidden. Use the 'View' menu to show them.
+                             </div>
+                         </template>
+                    </div>
+                </template>
+
+                 <!-- Placeholder -->
+                 <template x-if="!selectedSprintId">
+                     <div class="text-center text-base-content/50 mt-10"><p x-show="selectedProjectId">Select a sprint from the left sidebar to view tasks.</p><p x-show="!selectedProjectId">Select a project and sprint from the left sidebar.</p></div>
+                 </template>
+             </div>
+        </main>
+
+        <!-- Right Sidebar Container (Notes & Activity Only) -->
+        <div class="flex flex-col transition-all duration-300 ease-in-out flex-shrink-0" :class="isRightSidebarOpen ? 'w-72' : 'w-16'">
+             <aside class="flex-1 bg-base-200 text-base-content flex flex-col border-l border-base-300 overflow-hidden">
+                <!-- Header & Toggle -->
+                 <div class="h-16 flex items-center justify-between px-4 border-b border-base-300 flex-shrink-0">
+                     <span x-show="isRightSidebarOpen" class="text-lg font-semibold truncate pr-2" x-text="rightSidebarTitle">Context</span>
+                     <button @click="toggleRightSidebar" class="btn btn-ghost btn-sm btn-square">
+                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12H12m-8.25 5.25h16.5" /></svg>
+                     </button>
+                 </div>
+                 <!-- Content (visible when open) -->
+                 <div class="flex flex-col flex-1 overflow-hidden" x-show="isRightSidebarOpen">
+                    <!-- Tabs (Simplified) -->
+                    <div class="tabs tabs-bordered tabs-sm flex-shrink-0 px-2 pt-2">
+                         <a class="tab flex-1" :class="{ 'tab-active font-semibold': rightSidebarView === 'notes' }" @click.prevent="rightSidebarView = 'notes'">Notes</a>
+                         <a class="tab flex-1" :class="{ 'tab-active font-semibold': rightSidebarView === 'activity' }" @click.prevent="rightSidebarView = 'activity'">Activity</a>
+                    </div>
+                    <!-- Tab Content -->
+                    <div class="flex-1 overflow-y-auto p-4">
+                        <!-- Notes View -->
+                        <div x-show="rightSidebarView === 'notes'" x-transition>
+                              <h3 class="text-sm font-semibold mb-2 uppercase tracking-wide" x-text="noteTitle"></h3><textarea x-model="currentNote" @blur="saveNote()" class="textarea textarea-bordered w-full h-40 text-sm resize-none bg-base-100" :placeholder="`Notes for ${selectedItemName}...`" :key="selectedItemId"></textarea><p class="text-xs text-base-content/50 mt-1" x-show="selectedItemId">Notes are auto-saved on blur.</p><p class="text-xs text-base-content/50 mt-1" x-show="!selectedItemId">Select an item to add notes.</p>
+                        </div>
+                        <!-- Activity Feed View -->
+                        <div x-show="rightSidebarView === 'activity'" x-transition>
+                            <h3 class="text-sm font-semibold mb-3 uppercase tracking-wide">Activity Feed</h3><ul class="space-y-3 text-sm"><template x-for="(activity, index) in activityLog.slice().reverse().slice(0, 15)" :key="index"><li class="flex items-start space-x-2"><div class="avatar placeholder mt-0.5 flex-shrink-0"><div class="bg-neutral-focus text-neutral-content rounded-full w-5"><span class="text-xs" x-text="activity.user"></span></div></div><div><span class="font-medium" x-text="activity.user"></span><span class="text-base-content/80" x-html="` ${activity.action}`"></span><div class="text-xs text-base-content/50" x-text="activity.time"></div></div></li></template><li x-show="activityLog.length === 0" class="text-xs text-base-content/50">No activity yet.</li></ul>
+                        </div>
+                    </div>
+                 </div>
+                 <!-- Collapsed Right Sidebar Icons (Simplified) -->
+                 <div class="flex flex-col items-center py-4 space-y-3 flex-1" x-show="!isRightSidebarOpen">
+                     <button @click="rightSidebarView = 'notes'; isRightSidebarOpen = true;" class="btn btn-ghost btn-sm btn-square tooltip tooltip-left" data-tip="Notes"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg></button>
+                     <button @click="rightSidebarView = 'activity'; isRightSidebarOpen = true;" class="btn btn-ghost btn-sm btn-square tooltip tooltip-left" data-tip="Activity"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" /></svg></button>
+                 </div>
+            </aside>
+        </div>
+
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" @click.self="closeModal()">
+         <div class="bg-base-200 rounded-lg shadow-xl p-6 w-full max-w-md border border-base-300" @click.stop>
+             <h2 class="text-xl font-semibold mb-4" x-text="modalTitle"></h2>
+             <form @submit.prevent="saveItem()">
+                 <div class="space-y-4">
+                    <!-- Common Fields -->
+                    <div><label class="label text-sm pb-1"><span class="label-text">Title / Name</span></label><input type="text" x-model="currentItem.name" placeholder="Enter name" class="input input-bordered w-full bg-base-100" required /></div>
+                    <!-- Sprint Specific Fields -->
+                    <template x-if="modalType === 'sprint'"><div><label class="label text-sm pb-1"><span class="label-text">Goal</span></label><textarea x-model="currentItem.goal" placeholder="Sprint goal (optional)" class="textarea textarea-bordered w-full h-20 text-sm bg-base-100"></textarea></div><div><label class="label text-sm pb-1"><span class="label-text">Dates</span></label><input type="text" x-model="currentItem.dates" placeholder="e.g., Oct 26 - Nov 08" class="input input-bordered w-full bg-base-100" /></div></template>
+                     <!-- Task Specific Fields -->
+                    <template x-if="modalType === 'task'">
+                         <div><label class="label text-sm pb-1"><span class="label-text">Description</span></label><textarea x-model="currentItem.description" placeholder="Task details (optional)" class="textarea textarea-bordered w-full h-24 text-sm bg-base-100"></textarea></div>
+                         <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="label text-sm pb-1"><span class="label-text">Priority</span></label>
+                                <select x-model="currentItem.priority" class="select select-bordered w-full bg-base-100">
+                                    <option value="">None</option><option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
+                                </select>
+                            </div>
+                             <div>
+                                <label class="label text-sm pb-1"><span class="label-text">Type</span></label>
+                                <select x-model="currentItem.type" class="select select-bordered w-full bg-base-100">
+                                    <option value="Task">Task</option><option value="Bug">Bug</option><option value="Feature">Feature</option>
+                                </select>
+                            </div>
+                         </div>
+                         <div><label class="label text-sm pb-1"><span class="label-text">Assignee (Initials)</span></label><input type="text" x-model="currentItem.assignee" placeholder="e.g., ZC" class="input input-bordered w-full bg-base-100" maxlength="2" /></div>
+                         <div>
+                            <label class="label text-sm pb-1"><span class="label-text">Status</span></label>
+                            <select x-model="currentItem.status" class="select select-bordered w-full bg-base-100" required>
+                                <template x-for="status in taskStatuses" :key="status.id"><option :value="status.id" x-text="status.name"></option></template>
+                            </select>
+                        </div>
+                    </template>
+                </div>
+                 <!-- Modal Actions -->
+                 <div class="mt-6 flex justify-end space-x-3"><button type="button" @click="closeModal()" class="btn btn-ghost">Cancel</button><button type="submit" class="btn btn-primary" x-text="isEditing ? 'Save Changes' : 'Create'"></button></div>
+             </form>
+         </div>
+    </div>
+
+<script>
+    function pmApp() {
+        return {
+            // --- State ---
+            isLeftSidebarOpen: true, isRightSidebarOpen: true,
+            selectedProjectId: 1, selectedSprintId: 101, selectedItemId: null, selectedItemType: null,
+            rightSidebarView: 'notes',
+            expandedTaskIds: [], // Array for multiple expanded tasks
+            columnVisibility: { todo: true, inprogress: true, done: true }, // State for column visibility
+            projects: [ { id: 1, name: 'Project Alpha', sprints: [ { id: 101, name: 'Sprint 1: Setup', goal: 'Bootstrap the application environment.', dates: 'Oct 19 - Oct 25' }, { id: 102, name: 'Sprint 2: Core Logic', goal: 'Implement user auth.', dates: 'Oct 26 - Nov 08' } ]}, { id: 2, name: 'Design System', sprints: [ { id: 103, name: 'Components', goal: 'Build base components.', dates: 'Nov 01 - Nov 15' } ]} ],
+            tasks: [ { id: 201, projectId: 1, sprintId: 101, title: 'Setup Tailwind & DaisyUI', status: 'done', priority: 'High', assignee: 'ZC', type: 'Task', description: 'Install and configure build process.' }, { id: 202, projectId: 1, sprintId: 101, title: 'Install Alpine.js', status: 'inprogress', priority: 'Medium', assignee: 'AL', type: 'Task', description: 'Integrate Alpine for interactivity.\nMake sure to use v3.' }, { id: 203, projectId: 1, sprintId: 101, title: 'Login Button Style Issue', status: 'todo', priority: 'Low', assignee: null, type: 'Bug', description: 'The login button looks weird on mobile, specifically padding.' }, { id: 204, projectId: 1, sprintId: 102, title: 'Implement JWT Auth', status: 'todo', priority: 'High', assignee: null, type: 'Feature', description: '' }, { id: 205, projectId: 1, sprintId: 102, title: 'Define User Schema', status: 'todo', priority: 'Medium', assignee: 'ZC', type: 'Task', description: 'Using Prisma or similar ORM.' }, { id: 206, projectId: 2, sprintId: 103, title: 'Create Button Component', status: 'todo', priority: 'Medium', assignee: null, type: 'Task', description: '' }, ],
+            taskStatuses: [ { id: 'todo', name: 'To Do' }, { id: 'inprogress', name: 'In Progress' }, { id: 'done', name: 'Done' }, ],
+            notes: { 101: "Focus on getting the core build tools running smoothly.", 102: "Need to add user roles.", 202: "Check defer attribute usage.", 203: "Test on iOS and Android simulators." },
+            activityLog: [ { user: 'AL', action: 'moved task <span class="font-semibold">#202</span> to In Progress', time: '1 hour ago' }, { user: 'ZC', action: 'created task <span class="font-semibold">#205</span>', time: '3 hours ago' }, { user: 'ZC', action: 'updated details for <span class="font-semibold">Sprint 1</span>', time: 'Yesterday' }, ],
+            showModal: false, modalTitle: '', modalType: '', currentItem: {}, isEditing: false, parentId: null,
+
+            // --- Computed Properties ---
+            get selectedProject() { return this.projects.find(p => p.id === this.selectedProjectId); },
+            get selectedSprint() { return this.selectedProject?.sprints.find(s => s.id === this.selectedSprintId); },
+            get tasksByStatus() {
+                 if (!this.selectedSprintId) return {};
+                 const filteredTasks = this.tasks.filter(t => t.sprintId === this.selectedSprintId);
+                 if (!this.taskStatuses || !Array.isArray(this.taskStatuses)) { console.error("taskStatuses issue"); return {}; }
+                 return this.taskStatuses.reduce((acc, status) => {
+                    if (status && typeof status.id !== 'undefined') { acc[status.id] = filteredTasks.filter(task => task && task.status === status.id); }
+                    else { console.warn("Skipping status without id:", status); }
+                    return acc;
+                 }, {});
+            },
+            get selectedItemDetails() {
+                if (!this.selectedItemId) return null;
+                if (this.selectedItemType === 'task') return this.tasks.find(t => t.id === this.selectedItemId);
+                if (this.selectedItemType === 'sprint') return this.projects.flatMap(p => p.sprints).find(s => s.id === this.selectedItemId);
+                if (this.selectedItemType === 'project') return this.projects.find(p => p.id === this.selectedItemId);
+                return null;
+            },
+            get selectedItemName() {
+                if (this.selectedItemType === 'task' && this.selectedItemDetails) { return `#${this.selectedItemDetails.id}`; }
+                return this.selectedItemDetails?.name || 'Overview';
+            },
+            get rightSidebarTitle() {
+                 if (this.selectedItemType === 'sprint' && this.selectedSprint) return this.selectedSprint.name;
+                 if (this.selectedItemType === 'project' && this.selectedProject) return this.selectedProject.name;
+                 if (this.selectedItemType === 'task' && this.selectedItemDetails) return `Task ${this.selectedItemName}`;
+                 return 'Context';
+            },
+            get noteTitle() {
+                 const itemType = this.selectedItemType; const namePart = this.selectedItemName; if (!itemType) return 'Notes';
+                 return `Notes for ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${namePart}`;
+            },
+            get currentNote() { return this.notes[this.selectedItemId] || ''; },
+            set currentNote(value) { this.$nextTick(() => { this.notes[this.selectedItemId] = value; }); },
+
+            // --- Methods ---
+            init() {
+                 const initialItem = this.selectedSprint || this.selectedProject;
+                 if (initialItem) { this.selectItem(initialItem, this.selectedSprint ? 'sprint' : 'project'); }
+                 else if (this.selectedProjectId) { this.selectItem(this.selectedProject, 'project'); }
+                 console.log("App initialized.");
+            },
+            toggleLeftSidebar() { this.isLeftSidebarOpen = !this.isLeftSidebarOpen; },
+            toggleRightSidebar() { this.isRightSidebarOpen = !this.isRightSidebarOpen; },
+
+            // Toggles expansion state for a single task ID
+            toggleTaskExpansion(taskId) {
+                 const index = this.expandedTaskIds.indexOf(taskId);
+                 if (index > -1) { this.expandedTaskIds.splice(index, 1); } // Collapse
+                 else { this.expandedTaskIds.push(taskId); } // Expand
+                 const task = this.tasks.find(t => t.id === taskId);
+                 if (task) { this.selectItem(task, 'task'); } // Select for notes context
+            },
+
+            hideColumn(statusId) { // Method to hide column from inline icon
+                if (this.columnVisibility.hasOwnProperty(statusId)) {
+                    this.columnVisibility[statusId] = false;
+                }
+            },
+
+            selectProject(projectId) {
+                 if (this.selectedProjectId !== projectId) {
+                    this.selectedProjectId = projectId; this.expandedTaskIds = [];
+                    const project = this.projects.find(p => p.id === projectId);
+                    const firstSprintId = project?.sprints[0]?.id || null; this.selectedSprintId = firstSprintId;
+                    this.selectItem(firstSprintId ? this.selectedSprint : this.selectedProject, firstSprintId ? 'sprint' : 'project');
+                }
+            },
+            selectSprint(sprintId) {
+                if (this.selectedSprintId !== sprintId) { this.expandedTaskIds = []; this.selectedSprintId = sprintId; this.selectItem(this.selectedSprint, 'sprint'); }
+                else { console.log("Clicked the already selected sprint."); this.selectItem(this.selectedSprint, 'sprint'); }
+            },
+            selectItem(item, type) {
+                const newId = item ? item.id : null;
+                 if (this.selectedItemId === newId && this.selectedItemType === type) return;
+                this.selectedItemId = newId; this.selectedItemType = item ? type : null;
+                console.log(`Context set to ${type}: ${newId}`);
+            },
+            saveNote() { console.log(`Note for item ${this.selectedItemId} saved.`); },
+            moveTask(taskId, newStatus) {
+                const taskIndex = this.tasks.findIndex(t => t.id === taskId);
+                if (taskIndex !== -1) {
+                     const oldStatus = this.tasks[taskIndex].status; if (oldStatus === newStatus) return; this.tasks[taskIndex].status = newStatus;
+                     this.addActivity('You', `moved task <span class="font-semibold">#${taskId}</span> from ${this.taskStatuses.find(s=>s.id===oldStatus)?.name} to ${this.taskStatuses.find(s=>s.id===newStatus)?.name}`);
+                }
+            },
+            addActivity(user, action) { this.activityLog.push({ user: user, action: action, time: 'Just now' }); },
+            // --- Modal Methods ---
+             openAddModal(type, parentId = null, initialStatus = null) { this.isEditing = false; this.modalType = type; this.parentId = parentId; this.currentItem = { name: '', status: initialStatus || (type === 'task' ? 'todo' : undefined) }; if (type === 'project') this.modalTitle = 'Create New Project'; if (type === 'sprint') this.modalTitle = 'Create New Sprint'; if (type === 'task') { this.modalTitle = 'Create New Task'; this.currentItem.priority = 'Medium'; this.currentItem.type = 'Task'; this.currentItem.assignee = ''; this.currentItem.description = ''; } this.showModal = true; },
+            openEditModal(item, type) { this.isEditing = true; this.modalType = type; this.currentItem = JSON.parse(JSON.stringify(item)); this.parentId = null; if (type === 'project') this.modalTitle = `Edit Project: ${item.name}`; if (type === 'sprint') this.modalTitle = `Edit Sprint: ${item.name}`; if (type === 'task') this.modalTitle = `Edit Task: #${item.id}`; this.showModal = true; },
+            closeModal() { this.showModal = false; this.modalTitle = ''; this.currentItem = {}; this.modalType = ''; this.parentId = null; },
+             generateId() { return Date.now() + Math.floor(Math.random() * 1000); },
+             saveItem() { if (this.isEditing) { if (this.modalType === 'project') { const index = this.projects.findIndex(p => p.id === this.currentItem.id); if (index !== -1) { this.projects.splice(index, 1, this.currentItem); this.addActivity('You', `updated project <span class="font-semibold">${this.currentItem.name}</span>`); } } else if (this.modalType === 'sprint') { const project = this.projects.find(p => p.sprints.some(s => s.id === this.currentItem.id)); if (project) { const index = project.sprints.findIndex(s => s.id === this.currentItem.id); if (index !== -1) { project.sprints.splice(index, 1, this.currentItem); this.addActivity('You', `updated sprint <span class="font-semibold">${this.currentItem.name}</span>`); if(this.selectedItemId === this.currentItem.id && this.selectedItemType === 'sprint') { this.$nextTick(() => this.selectItem(this.currentItem, 'sprint'));}} } } else if (this.modalType === 'task') { const index = this.tasks.findIndex(t => t.id === this.currentItem.id); if (index !== -1) { const oldTask = this.tasks[index]; this.currentItem.projectId = oldTask.projectId; this.currentItem.sprintId = oldTask.sprintId; this.tasks.splice(index, 1, this.currentItem); this.addActivity('You', `updated task <span class="font-semibold">#${this.currentItem.id}</span>`); if(this.selectedItemId === this.currentItem.id && this.selectedItemType === 'task') { this.$nextTick(() => this.selectItem(this.currentItem, 'task')); } } } } else { const newItem = { ...this.currentItem, id: this.generateId() }; if (this.modalType === 'project') { newItem.sprints = []; this.projects.push(newItem); this.addActivity('You', `created project <span class="font-semibold">${newItem.name}</span>`); this.selectProject(newItem.id); } else if (this.modalType === 'sprint' && this.parentId) { const project = this.projects.find(p => p.id === this.parentId); if (project) { newItem.projectId = this.parentId; project.sprints.push(newItem); this.addActivity('You', `created sprint <span class="font-semibold">${newItem.name}</span> in project ${project.name}`); this.selectSprint(newItem.id); } } else if (this.modalType === 'task' && this.selectedSprintId) { newItem.projectId = this.selectedProjectId; newItem.sprintId = this.selectedSprintId; this.tasks.push(newItem); this.addActivity('You', `created task <span class="font-semibold">#${newItem.id}</span> in sprint ${this.selectedSprint?.name}`); } } this.closeModal(); },
+             deleteItem(itemId, type) { if (!confirm(`Are you sure you want to delete this ${type}? This action cannot be undone.`)) { return; } if (type === 'task') { const index = this.tasks.findIndex(t => t.id === itemId); if (index !== -1) { const deletedTask = this.tasks.splice(index, 1)[0]; this.addActivity('You', `deleted task <span class="font-semibold">#${deletedTask.id} (${deletedTask.title})</span>`); if (this.selectedItemId === itemId) { this.selectItem(this.selectedSprint || this.selectedProject, this.selectedSprint ? 'sprint' : 'project'); } const expandedIndex = this.expandedTaskIds.indexOf(itemId); if (expandedIndex > -1) { this.expandedTaskIds.splice(expandedIndex, 1); } } } /* Add logic for sprint/project deletion */ }
+        }
+    }
+</script>
+
+</body>
+</html>
