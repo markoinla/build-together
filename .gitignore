@@ -56,8 +56,14 @@ Thumbs.db
 debug.log
 *.log
 
-# SQLite database files
-*.db
+# MCP
+mcp/.mcp_server.lock
+
+# Database
+app.db
 *.sqlite
 *.sqlite3
+
+# SQLite database files
+*.db
 instance/

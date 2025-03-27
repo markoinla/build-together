@@ -154,52 +154,6 @@ You can override these settings by:
 2. Creating a `.env` file in the project root with these variables
 3. Directly editing the `config.py` file (not recommended for production)
 
-## Project Structure
-
-```
-build-together/
-├── app/                    # Application package
-│   ├── api/                # API endpoints
-│   ├── models/             # Database models
-│   ├── routes/             # Route handlers
-│   ├── static/             # Static files (CSS, JS)
-│   ├── templates/          # Jinja2 templates
-│   └── utils/              # Utility functions
-├── frontend/               # Frontend tooling
-│   ├── package.json        # NPM configuration
-│   ├── tailwind.config.js  # Tailwind CSS configuration
-│   └── postcss.config.js   # PostCSS configuration
-├── mcp/                    # MCP server implementation
-│   ├── tools/              # MCP tool definitions
-│   └── run_mcp.sh          # MCP server startup script
-├── migrations/             # Database migrations
-├── tests/                  # Test suite
-├── app.py                  # Application entry point
-├── config.py               # Configuration settings
-├── init_db.py              # Database initialization
-├── run.sh                  # Application startup script
-├── setup.sh                # Setup script
-└── requirements.txt        # Project dependencies
-```
-
-## User Interface
-
-Build Together uses a combination of technologies to create a smooth user experience:
-
-- **Tailwind & DaisyUI**: For responsive styling and components
-- **HTMX**: For dynamic content updates without full page reloads
-- **Font Awesome & Bootstrap Icons**: For UI elements and icons
-- **Markdown**: For rich text formatting in descriptions
-
-### Star Feature
-
-The star feature allows you to mark tasks and issues as important:
-
-- Click the star icon next to a task or issue number to toggle its starred status
-- Starred items are visually highlighted for quick identification
-- The starred status is preserved when editing tasks or issues
-- You can filter and sort by starred status (coming soon)
-
 ## API Documentation
 
 The application provides a RESTful API for all CRUD operations:
@@ -275,7 +229,7 @@ Build Together includes full MCP (Model Context Protocol) support for seamless i
 {
   "mcpServers": {
     "buildtogether": {
-      "command": "/path/to/your/buildtogether-github/mcp/run_mcp.sh",
+      "command": "/path/to/your/build-together/mcp/run_mcp.sh",
       "args": [],
       "env": {
         "PYTHONUNBUFFERED": "1",
@@ -287,7 +241,7 @@ Build Together includes full MCP (Model Context Protocol) support for seamless i
 }
 ```
 
-> **Note**: Replace `/path/to/your/buildtogether-github` with the actual path to your Build Together installation. The port in `BTG_BASE_URL` should match the port configured in your `config.py` file.
+> **Note**: Replace `/path/to/your/build-together` with the actual path to your Build Together installation. The port in `BTG_BASE_URL` should match the port configured in your `config.py` file.
 
 > **Note**: When using Build Together with AI coding assistants, the tool names might be prefixed (e.g., with `mcp1_`). This is handled automatically by these tools, so you can refer to them without the prefix in your prompts.
 
@@ -319,15 +273,15 @@ Build Together provides the following MCP tools for AI assistants:
 - `get_issue` - Get detailed information about a specific issue
 - `update_issue` - Update an issue's details, resolution status, or starred status
 
-### Using MCP Tools in Windsurf
+### Using MCP Tools in Cursor, Claude Code, or Windsurf
 
-You can use these tools directly in your conversations with Windsurf. For example:
+You can use these tools directly in your conversations with the AI assistant. For example:
 
 1. To create a new task: "Please create a task in the current sprint to implement the login feature"
 2. To check project status: "What tasks are still incomplete in the current sprint?"
 3. To update a task: "Mark the authentication task as completed"
 
-Windsurf will automatically use the appropriate MCP tools to perform these actions.
+The AI assistant will automatically use the appropriate MCP tools to perform these actions.
 
 ## Development
 
@@ -339,23 +293,32 @@ The application runs in debug mode by default when started with `./run.sh`. This
 - No manual server restart is required after code changes
 - For CSS changes, a hard refresh in the browser (Cmd+Shift+R on Mac or Ctrl+Shift+R on Windows) might be needed
 
-### Frontend Development
+### Project Structure
 
-If you need to modify the Tailwind CSS configuration:
-
-1. Navigate to the frontend directory:
-```bash
-cd frontend
 ```
-
-2. Install the frontend dependencies (if not already done):
-```bash
-npm install
-```
-
-3. Run the Tailwind CSS build process:
-```bash
-npm run build:css
+build-together/
+├── app/                    # Application package
+│   ├── api/                # API endpoints
+│   ├── models/             # Database models
+│   ├── routes/             # Route handlers
+│   ├── static/             # Static files (CSS, JS)
+│   ├── templates/          # Jinja2 templates
+│   └── utils/              # Utility functions
+├── frontend/               # Frontend tooling
+│   ├── package.json        # NPM configuration
+│   ├── tailwind.config.js  # Tailwind CSS configuration
+│   └── postcss.config.js   # PostCSS configuration
+├── mcp/                    # MCP server implementation
+│   ├── tools/              # MCP tool definitions
+│   └── run_mcp.sh          # MCP server startup script
+├── migrations/             # Database migrations
+├── tests/                  # Test suite
+├── app.py                  # Application entry point
+├── config.py               # Configuration settings
+├── init_db.py              # Database initialization
+├── run.sh                  # Application startup script
+├── setup.sh                # Setup script
+└── requirements.txt        # Project dependencies
 ```
 
 ### Database Migrations
