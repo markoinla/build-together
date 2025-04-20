@@ -58,32 +58,19 @@ The application will be available at http://127.0.0.1:3149 by default.
 
 ### Setting Up with AI Cursor, Windsurf, and Claude Code
 
-#### For Cursor
+#### For Cursor & Windsurf
 
-1. Open the Build Together project in Cursor
-2. In Cursor, use the command palette (Cmd+Shift+P) and search for "Connect to MCP Server"
-3. When prompted for the MCP script path, point to `./mcp/run_mcp.sh`
-4. Cursor will automatically start and manage the MCP server for you
-5. You can now use natural language to manage your projects through Cursor
+1. In Cursor, use the command palette (Cmd+Shift+P) and search for "Connect to MCP Server"
+2. Add in the JSON below in your MCP config file as described in settings
+3. You can now use natural language to manage your projects through Cursor
 
-#### For Windsurf
-
-1. Open the Build Together project in Windsurf
-2. Add the following configuration to your Windsurf MCP config file (located at `~/.codeium/windsurf/mcp_config.json`):
    ```json
-   "buildtogether": {
-     "command": "/path/to/your/project/mcp/run_mcp.sh",
-     "args": [],
-     "env": {
-       "PYTHONUNBUFFERED": "1",
-       "PYTHONIOENCODING": "utf-8",
-       "BTG_BASE_URL": "http://127.0.0.1:3149"
-     }
-   }
+   "buildTogether": {
+      "command": "/path/to/your/project/build-together/mcp/run_mcp.sh",
+      "args": []
+    }
    ```
-   Make sure to replace `/path/to/your/project` with the actual path to your Build Together project.
-3. Restart Windsurf to apply the configuration
-4. You can now use natural language to manage your projects through Windsurf
+   Make sure to replace `/path/to/your/project` with the actual path to where you cloned Build Together.
 
 ## Screenshots
 
