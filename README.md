@@ -56,7 +56,7 @@ After setup is complete, you can run the application using:
 
 The application will be available at http://127.0.0.1:3149 by default.
 
-### Setting Up with AI Assistants
+### Setting Up with AI Cursor, Windsurf, and Claude Code
 
 #### For Cursor
 
@@ -183,7 +183,7 @@ curl -X POST http://127.0.0.1:3149/mcp/execute -H "Content-Type: application/jso
 
 #### Update a project
 ```bash
-curl -X POST http://127.0.0.1:3149/mcp/execute -H "Content-Type: application/json" -d '{"name": "update_project", "parameters": {"project_id": 1, "name": "Updated Project", "description": "Updated description", "requirements": "Project requirements", "implementation_details": "Implementation details"}}' | python -m json.tool
+curl -X POST http://127.0.0.1:3149/mcp/execute -H "Content-Type: application/json" -d '{"name": "update_project", "parameters": {"project_id": 1, "data": {"name": "Updated Project", "description": "Updated description"}}}' | python -m json.tool
 ```
 
 #### Create a new sprint
@@ -207,15 +207,26 @@ Build Together includes full MCP (Model Context Protocol) support for seamless i
 
 ### Setting Up MCP
 
-1. Start the Build Together application:
+1. Start the Build Together application (can be done automatically by the MCP server):
 ```bash
 ./run.sh
 ```
 
 2. Add a new MCP server in Cursor, Windsurf, or Claude Code settings. Or alternatively, start the MCP server in a separate terminal:
 ```bash
+# Basic usage with auto-start and default port (3149)
 ./mcp/run_mcp.sh
+
+# Format: ./mcp/run_mcp.sh [PORT] [AUTO_START]
+
+# Connect to the Build Together app on port 8080
+./mcp/run_mcp.sh 8080
+
+# Connect to the Build Together app on default port but disable auto-start
+./mcp/run_mcp.sh 3149 false
 ```
+
+The MCP server will automatically detect if Build Together is running and start it if needed (unless auto-start is disabled).
 
 3. Configure Cursor or Windsurf to use the MCP server:
    - Open Cursor or Windsurf settings
@@ -230,7 +241,7 @@ Build Together includes full MCP (Model Context Protocol) support for seamless i
   "mcpServers": {
     "buildtogether": {
       "command": "/path/to/your/build-together/mcp/run_mcp.sh",
-      "args": [],
+      "args": ["3149", "true"],  # [port, auto-start]
       "env": {
         "PYTHONUNBUFFERED": "1",
         "PYTHONIOENCODING": "utf-8",
@@ -241,7 +252,7 @@ Build Together includes full MCP (Model Context Protocol) support for seamless i
 }
 ```
 
-> **Note**: Replace `/path/to/your/build-together` with the actual path to your Build Together installation. The port in `BTG_BASE_URL` should match the port configured in your `config.py` file.
+> **Note**: Replace `/path/to/your/build-together` with the actual path to your Build Together installation. The port specified in the `args` array and in the `BTG_BASE_URL` environment variable should match the port where your Build Together application is running. The second argument in `args` controls whether the MCP server will automatically start Build Together if needed.
 
 > **Note**: When using Build Together with AI coding assistants, the tool names might be prefixed (e.g., with `mcp1_`). This is handled automatically by these tools, so you can refer to them without the prefix in your prompts.
 
@@ -350,5 +361,3 @@ flask db migrate -m "Description of changes"
 ## License
 
 MIT License
-
-Copyright (c) 2025 Build Together

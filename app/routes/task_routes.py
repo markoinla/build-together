@@ -18,8 +18,20 @@ class TaskSchema(Schema):
     completed = fields.Boolean()
     sprint_id = fields.Integer(required=True)
 
+# Marshmallow schema for task updates
+class UpdateTaskSchema(Schema):
+    """
+    Schema for validating task updates using Marshmallow
+    
+    Similar to TaskSchema but does not require fields for updates
+    """
+    details = fields.String(required=False)
+    completed = fields.Boolean(required=False)
+    sprint_id = fields.Integer(required=False)
+
 # Create schema instances
 task_schema = TaskSchema()
+update_task_schema = UpdateTaskSchema()
 
 # Routes for tasks
 @task_bp.route('', methods=['GET'])
@@ -184,8 +196,8 @@ def update_task(task_id):
                 'message': 'No input data provided'
             }), 400
             
-        # Validate data
-        errors = task_schema.validate(json_data)
+        # Validate data using update schema that doesn't require all fields
+        errors = update_task_schema.validate(json_data)
         if errors:
             return jsonify({
                 'status': 'error',

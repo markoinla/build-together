@@ -167,10 +167,12 @@ The MCP server allows AI assistants to interact with Build Together using natura
   "name": "update_project",
   "parameters": {
     "project_id": 1,
-    "name": "Updated Project Name",
-    "description": "Updated description",
-    "requirements": "Updated requirements",
-    "implementation_details": "Updated implementation details"
+    "data": {
+      "name": "Updated Project Name",
+      "description": "Updated description",
+      "requirements": "Updated requirements",
+      "implementation_details": "Updated implementation details"
+    }
   }
 }
 ```

@@ -18,9 +18,22 @@ class SprintSchema(Schema):
     description = fields.String(allow_none=True)
     status = fields.String(validate=validate.OneOf(['Planned', 'Active', 'Completed']))
     project_id = fields.Integer(required=True)
+    
+# Marshmallow schema for sprint updates
+class UpdateSprintSchema(Schema):
+    """
+    Schema for validating sprint updates using Marshmallow
+    
+    Similar to SprintSchema but does not require fields for updates
+    """
+    name = fields.String(required=False, validate=validate.Length(min=1, max=100))
+    description = fields.String(allow_none=True)
+    status = fields.String(validate=validate.OneOf(['Planned', 'Active', 'Completed']))
+    project_id = fields.Integer(required=False)
 
 # Create schema instances
 sprint_schema = SprintSchema()
+update_sprint_schema = UpdateSprintSchema()
 
 # Routes for sprints
 @sprint_bp.route('', methods=['GET'])
@@ -186,8 +199,8 @@ def update_sprint(sprint_id):
                 'message': 'No input data provided'
             }), 400
             
-        # Validate data
-        errors = sprint_schema.validate(json_data)
+        # Validate data using update schema that doesn't require all fields
+        errors = update_sprint_schema.validate(json_data)
         if errors:
             return jsonify({
                 'status': 'error',

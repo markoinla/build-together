@@ -18,8 +18,20 @@ class IssueSchema(Schema):
     completed = fields.Boolean()
     sprint_id = fields.Integer(required=True)
 
+# Marshmallow schema for issue updates
+class UpdateIssueSchema(Schema):
+    """
+    Schema for validating issue updates using Marshmallow
+    
+    Similar to IssueSchema but does not require fields for updates
+    """
+    details = fields.String(required=False)
+    completed = fields.Boolean(required=False)
+    sprint_id = fields.Integer(required=False)
+
 # Create schema instances
 issue_schema = IssueSchema()
+update_issue_schema = UpdateIssueSchema()
 
 # Routes for issues
 @issue_bp.route('', methods=['GET'])
@@ -184,8 +196,8 @@ def update_issue(issue_id):
                 'message': 'No input data provided'
             }), 400
             
-        # Validate data
-        errors = issue_schema.validate(json_data)
+        # Validate data using update schema that doesn't require all fields
+        errors = update_issue_schema.validate(json_data)
         if errors:
             return jsonify({
                 'status': 'error',

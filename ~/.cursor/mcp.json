@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "firecrawl-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "firecrawl-mcp"
+      ],
+      "env": {
+        "FIRECRAWL_API_KEY": "fc-99809025d37744cb93a5c3c7ad2abbb7"
+      }
+    },
+    "buildtogether": {
+      "command": "python3",
+      "args": [
+        "/Users/marko.stankovic/Desktop/WEBDEV/PROJECTS/build-together/mcp/super_minimal.py"
+      ]
+    },
+    "exa_composio": {
+      "url": "https://mcp.composio.dev/exa/sweet-lazy-river-PrW7ii"
+    }
+  }
+} 

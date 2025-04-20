@@ -1,68 +1,67 @@
 #!/bin/bash
 
-# Set environment variables
-export PYTHONUNBUFFERED=1
-export PYTHONIOENCODING=utf-8
-export BTG_BASE_URL="http://127.0.0.1:3149"
+# Redirect all output to stderr by default
+exec 3>&1  # Save original stdout to file descriptor 3
+exec 1>&2  # Redirect stdout to stderr
 
-# Get the directory of this script
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "$SCRIPT_DIR"
+# Parse command line arguments
+PORT=3149  # Default port
+AUTO_START=true  # Default to auto-start Build Together
 
-# Create a lock file path
-LOCK_FILE="$SCRIPT_DIR/.mcp_server.lock"
-
-# Function to clean up before exit
-cleanup() {
-    echo "Cleaning up MCP server resources..."
-    # Remove the lock file when the script exits
-    if [ -f "$LOCK_FILE" ]; then
-        rm "$LOCK_FILE"
-    fi
-    exit 0
-}
-
-# Set up trap to ensure cleanup happens on exit
-trap cleanup EXIT INT TERM
-
-# Check if the lock file exists (meaning another instance is running)
-if [ -f "$LOCK_FILE" ]; then
-    # Check if the process ID in the lock file is still running
-    OLD_PID=$(cat "$LOCK_FILE")
-    if ps -p "$OLD_PID" > /dev/null 2>&1; then
-        echo "Another MCP server instance is already running with PID $OLD_PID"
-        echo "If you believe this is an error, delete $LOCK_FILE and try again"
-        exit 1
-    else
-        echo "Found stale lock file. Removing and continuing..."
-        rm "$LOCK_FILE"
-    fi
+# First argument is PORT
+if [ $# -gt 0 ]; then
+    PORT=$1
 fi
 
-# Create the lock file with our process ID
-echo $$ > "$LOCK_FILE"
+# Second argument is AUTO_START
+if [ $# -gt 1 ]; then
+    AUTO_START=$2
+fi
 
-# Make sure we have the required dependencies
-if [ ! -f venv/bin/activate ]; then
-    echo "Virtual environment not found. Creating one..."
-    python3 -m venv venv
+# Change to the project root directory
+cd "$(dirname "$0")/.."
+
+# Activate virtual environment if it exists
+if [ -d "venv" ]; then
+    echo "Activating virtual environment..."
     source venv/bin/activate
-    pip install -r requirements.txt
+fi
+
+# Check if Build Together is already running on the specified port
+echo "Checking if Build Together is running on port $PORT..."
+if curl -s "http://localhost:$PORT/api/projects" > /dev/null; then
+    echo "Build Together is already running on port $PORT"
+elif [ "$AUTO_START" = "true" ]; then
+    echo "Build Together is not running on port $PORT, starting it now..."
+    # Start Build Together in the background
+    ./run.sh &
+    
+    # Wait for server to start
+    echo "Waiting for Build Together to start..."
+    for i in {1..10}; do
+        if curl -s "http://localhost:$PORT/api/projects" > /dev/null; then
+            echo "Build Together started successfully on port $PORT"
+            break
+        fi
+        if [ $i -eq 10 ]; then
+            echo "Warning: Couldn't confirm Build Together started. Will proceed anyway..."
+        fi
+        sleep 1
+    done
 else
-    source venv/bin/activate
+    echo "Build Together is not running on port $PORT and auto-start is disabled."
+    echo "The MCP server will still start, but commands will fail until Build Together is running."
 fi
-
-# Check if httpx is already installed to avoid unnecessary reinstallation
-if ! pip show httpx > /dev/null 2>&1; then
-    echo "Installing required httpx package..."
-    pip install httpx > /dev/null 2>&1
-fi
-
-# Log startup information
-echo "Starting MCP server with PID $$..."
-echo "Lock file created at $LOCK_FILE"
-echo "Current time: $(date)"
 
 # Run the MCP server
-# When run without arguments (by Windsurf), use stdio transport
-python3 mcp_server.py "$@"
+echo "Starting Build Together MCP server (connecting to port $PORT)..."
+# Restore stdout for the Python process (so it can write JSON to stdout)
+exec 1>&3
+
+# Run the Python script, redirecting stderr to our stderr (fd 2)
+python mcp/build_together_mcp.py --port $PORT 2>&2
+
+# Deactivate virtual environment on exit
+if [ -n "$VIRTUAL_ENV" ]; then
+    deactivate
+fi 
